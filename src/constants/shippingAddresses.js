@@ -1,0 +1,46 @@
+export const SHIPPING_ADDRESSES = [
+  {
+    id: "1",
+    label: "Head Office",
+    name: "Apex Sports Co.",
+    street: "1234 Commerce Blvd, Suite 200",
+    city: "Portland",
+    state: "OR",
+    zip: "97201",
+    country: "United States",
+    phone: "(555) 987-6543",
+    isDefault: true,
+  },
+  {
+    id: "2",
+    label: "Warehouse",
+    name: "Apex Sports Co.",
+    street: "890 Industrial Pkwy, Unit 4",
+    city: "Salem",
+    state: "OR",
+    zip: "97301",
+    country: "United States",
+    phone: "(555) 321-0987",
+    isDefault: false,
+  },
+  {
+    id: "3",
+    label: "West Coast Showroom",
+    name: "Apex Sports Co.",
+    street: "456 Market St, Floor 3",
+    city: "San Francisco",
+    state: "CA",
+    zip: "94105",
+    country: "United States",
+    phone: "(555) 654-3210",
+    isDefault: false,
+  },
+];
+
+export const US_STATES = [
+  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
+  "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
+  "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
+  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
+  "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY",
+];
