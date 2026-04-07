@@ -117,6 +117,7 @@ export const TRENDING = [
     price: "$60.00",
     brand: "Holloway",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=400&fit=crop&crop=center",
   },
   {
     name: "Legend Tech Full-Zip Fleece Jacket",
@@ -124,6 +125,7 @@ export const TRENDING = [
     price: "$110.40",
     brand: "Russell Athletic",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=400&fit=crop",
   },
   {
     name: "Legend Short Sleeve Pullover",
@@ -131,6 +133,7 @@ export const TRENDING = [
     price: "$72.10",
     brand: "Russell Athletic",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop",
   },
   {
     name: "Heritage Prep Crew",
@@ -138,6 +141,7 @@ export const TRENDING = [
     price: "$63.00",
     brand: "Holloway",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?w=400&h=400&fit=crop",
   },
   {
     name: "Cold Secure Puffer Vest",
@@ -145,6 +149,7 @@ export const TRENDING = [
     price: "$68.00",
     brand: "Holloway",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1609873814058-a8928924184a?w=400&h=400&fit=crop",
   },
   {
     name: "Octane Soccer Jersey",
@@ -152,6 +157,7 @@ export const TRENDING = [
     price: "$22.00",
     brand: "Augusta Sportswear",
     tag: "NEW",
+    image: "https://images.unsplash.com/photo-1580087256394-dc596e1c8f4f?w=400&h=400&fit=crop",
   },
 ];
 
