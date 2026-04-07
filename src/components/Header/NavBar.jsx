@@ -1,5 +1,6 @@
 import NavDropdown from '@/components/NavDropdown'
 import { NAV } from '@/constants/navigation'
+import { Link } from 'react-router-dom'
 
 const NavBar = () => (
   <div className="hidden md:block border-t border-slate-100 relative">
@@ -8,15 +9,15 @@ const NavBar = () => (
         item.children || item.items ? (
           <NavDropdown key={item.label} label={item.label} children={item.children} items={item.items} />
         ) : (
-          <a
+          <Link
             key={item.label}
-            href={item.href}
+            to={item.href || '/'}
             className={`text-sm font-semibold tracking-wide py-4 px-1 border-b-2 border-transparent hover:border-red-600 whitespace-nowrap transition-colors ${
               item.label === 'NEW' ? 'text-red-600 border-red-600' : 'text-slate-700 hover:text-red-600'
             }`}
           >
             {item.label}
-          </a>
+          </Link>
         )
       )}
     </div>

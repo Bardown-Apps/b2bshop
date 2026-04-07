@@ -16,7 +16,7 @@ import routes from "./routes";
 
 export const PROFILE = {
   accountNumber: "ACC-2847",
-  companyName: "Apex Sports Co.",
+  companyName: "Adrenalin SFS",
   customerSince: "04/07/2026",
   discountStatus: "Gold Tier",
   eligiblePayment: "Net 30",
@@ -72,11 +72,27 @@ export const SIDEBAR_LINKS = [
     group: "MY ACCOUNT",
     items: [
       { label: "Dashboard", icon: LayoutDashboard, href: routes.dashboard },
-      { label: "Password & Security", icon: ShieldCheck, href: routes.security },
-      { label: "Shipping Addresses", icon: MapPin, href: routes.shippingAddresses },
-      { label: "Saved Credit Cards", icon: CreditCard, href: routes.savedCards },
+      {
+        label: "Password & Security",
+        icon: ShieldCheck,
+        href: routes.security,
+      },
+      {
+        label: "Shipping Addresses",
+        icon: MapPin,
+        href: routes.shippingAddresses,
+      },
+      {
+        label: "Saved Credit Cards",
+        icon: CreditCard,
+        href: routes.savedCards,
+      },
       { label: "Account Users", icon: Users, href: routes.accountUsers },
-      { label: "My Support Tickets", icon: HeadsetIcon, href: routes.supportTickets },
+      {
+        label: "My Support Tickets",
+        icon: HeadsetIcon,
+        href: routes.supportTickets,
+      },
     ],
   },
   {
@@ -86,10 +102,22 @@ export const SIDEBAR_LINKS = [
   {
     group: "MY FREESTYLE DESIGNS",
     items: [
-      { label: "FreeStyle Sublimation", icon: Paintbrush, href: routes.freestyleSublimation },
+      {
+        label: "FreeStyle Sublimation",
+        icon: Paintbrush,
+        href: routes.freestyleSublimation,
+      },
       { label: "My Art Library", icon: Image, href: routes.artLibrary },
-      { label: "FreeStyle Headwear", icon: Crown, href: routes.freestyleHeadwear },
-      { label: "FreeStyle DigitalPrint", icon: Printer, href: routes.freestyleDigitalPrint },
+      {
+        label: "FreeStyle Headwear",
+        icon: Crown,
+        href: routes.freestyleHeadwear,
+      },
+      {
+        label: "FreeStyle DigitalPrint",
+        icon: Printer,
+        href: routes.freestyleDigitalPrint,
+      },
     ],
   },
 ];

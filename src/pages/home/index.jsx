@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '@/store/hooks'
 import { login } from '@/store/slices/authSlice'
-import routes from '@/constants/routes'
 import AnnouncementBar from '@/components/AnnouncementBar'
 import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
@@ -15,7 +13,6 @@ import LoginDialog from '@/components/LoginDialog'
 
 const Home = () => {
   const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const [loginOpen, setLoginOpen] = useState(false)
 
   const openLogin = () => setLoginOpen(true)
@@ -23,7 +20,6 @@ const Home = () => {
   const handleLoginSuccess = (data) => {
     dispatch(login(data))
     setLoginOpen(false)
-    navigate(routes.dashboard)
   }
 
   return (

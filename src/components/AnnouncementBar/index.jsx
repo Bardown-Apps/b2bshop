@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const messages = [
   'Free Shipping on Orders Over $300',
@@ -27,15 +28,15 @@ const AnnouncementBar = () => {
         className={`inline-block transition-all duration-400 ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
       >
         {messages[idx]}&nbsp;|&nbsp;
-        <a href="#" className="underline hover:text-red-400 transition-colors">
+        <Link to="/" className="underline hover:text-red-400 transition-colors">
           Learn More
-        </a>
+        </Link>
       </span>
       <div className="absolute right-4 top-1/2 -translate-y-1/2 hidden lg:flex items-center gap-4">
         {['Facebook', 'Instagram', 'X'].map((s) => (
-          <a key={s} href="#" className="text-white/50 hover:text-white text-xs transition-colors duration-200">
+          <Link key={s} to="/" className="text-white/50 hover:text-white text-xs transition-colors duration-200">
             {s}
-          </a>
+          </Link>
         ))}
       </div>
     </div>

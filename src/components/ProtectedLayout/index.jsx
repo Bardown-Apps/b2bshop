@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Outlet, useLocation } from "react-router-dom";
+import { useNavigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import routes from "@/constants/routes";
@@ -48,18 +48,20 @@ const ProtectedLayout = () => {
           </button>
 
           <div className="flex-1 flex justify-center">
-            <a
-              href="/"
+            <Link
+              to="/"
               className="text-2xl font-bold tracking-tight text-slate-900 hover:text-red-600 transition-colors"
             >
-              B2BShop
-            </a>
+              Bardown B2B
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-200">
               <User className="w-4 h-4 text-slate-500" />
-              <span className="text-xs font-medium text-slate-600">Admin</span>
+              <span className="text-xs font-medium text-slate-600">
+                Adrenalin Manager
+              </span>
             </div>
             <button
               onClick={handleLogout}

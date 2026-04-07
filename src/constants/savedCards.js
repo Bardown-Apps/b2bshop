@@ -12,7 +12,7 @@ export const SAVED_CARDS = [
     brand: "Mastercard",
     last4: "7135",
     expiry: "03/2028",
-    holder: "Apex Sports Co.",
+    holder: "Adrenalin SFS",
     isDefault: false,
   },
   {

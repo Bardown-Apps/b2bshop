@@ -1,52 +1,67 @@
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import Dialog from '@/components/Dialog'
-import FieldError from '@/components/FieldError'
-import { fakeLogin } from '@/services/authService'
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import Dialog from "@/components/Dialog";
+import FieldError from "@/components/FieldError";
+import { fakeLogin } from "@/services/authService";
 
 const LoginDialog = ({ open, onClose, onSuccess }) => {
-  const [error, setError] = useState('')
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
-    defaultValues: { email: 'admin@b2bshop.com', password: 'password' },
-  })
+  const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: { email: "adrenalin@test.com", password: "password" },
+  });
 
   const onSubmit = async (values) => {
-    setError('')
+    setError("");
     try {
-      const data = await fakeLogin(values)
-      onSuccess(data)
-      reset()
+      const data = await fakeLogin(values);
+      onSuccess(data);
+      reset();
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     }
-  }
+  };
 
   return (
-    <Dialog open={open} onClose={onClose} title="Sign In to B2BShop">
+    <Dialog open={open} onClose={onClose} title="Sign In to Bardown B2B">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
         <FieldError message={error} />
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Email
+          </label>
           <input
             id="email"
             type="email"
-            placeholder="admin@b2bshop.com"
-            {...register('email', { required: 'Email is required' })}
+            placeholder="adrenalin@test.com"
+            {...register("email", { required: "Email is required" })}
             className={`w-full px-4 py-2.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition-all duration-200 ${
-              errors.email ? 'border-red-400' : 'border-slate-200'
+              errors.email ? "border-red-400" : "border-slate-200"
             }`}
           />
           <FieldError message={errors.email?.message} />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-slate-700 mb-1"
+          >
+            Password
+          </label>
           <input
             id="password"
             type="password"
             placeholder="password"
-            {...register('password', { required: 'Password is required' })}
+            {...register("password", { required: "Password is required" })}
             className={`w-full px-4 py-2.5 border rounded-lg text-sm outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition-all duration-200 ${
-              errors.password ? 'border-red-400' : 'border-slate-200'
+              errors.password ? "border-red-400" : "border-slate-200"
             }`}
           />
           <FieldError message={errors.password?.message} />
@@ -56,14 +71,11 @@ const LoginDialog = ({ open, onClose, onSuccess }) => {
           disabled={isSubmitting}
           className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold rounded-lg text-sm uppercase tracking-wide transition-all cursor-pointer disabled:cursor-not-allowed"
         >
-          {isSubmitting ? 'Signing in...' : 'Sign In'}
+          {isSubmitting ? "Signing in..." : "Sign In"}
         </button>
-        <p className="text-xs text-slate-500 text-center">
-          Demo: admin@b2bshop.com / password
-        </p>
       </form>
     </Dialog>
-  )
-}
+  );
+};
 
-export default LoginDialog
+export default LoginDialog;

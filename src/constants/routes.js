@@ -1,5 +1,9 @@
 const routes = {
   home: "/",
+  catalogues: "/catalogues",
+  brandCatalogues: "/catalogues/brand/:brandSlug",
+  brandCatalogue: (brandSlug = ":brandSlug") =>
+    `/catalogues/brand/${brandSlug}`,
   dashboard: "/dashboard",
   clubStore: "/club-store",
   account: "/account",
