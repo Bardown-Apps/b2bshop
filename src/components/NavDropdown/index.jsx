@@ -20,40 +20,47 @@ const NavDropdown = ({ label, children, items }) => {
         onClick={() => setOpen(!open)}
       >
         {label}
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && (
-        <div className="absolute left-0 right-0 top-full z-50 bg-white border-t border-slate-100 shadow-xl">
-          <div className="max-w-[1400px] mx-auto px-8 py-6">
-            {children ? (
-              <div className="grid grid-cols-3 lg:grid-cols-5 gap-8">
-                {Object.entries(children).map(([group, subitems]) => (
-                  <div key={group}>
-                    <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">{group}</p>
-                    <ul className="space-y-2">
-                      {subitems.map((item) => (
-                        <li key={item}>
-                          <a href="#" className="text-sm text-slate-500 hover:text-red-600 transition-colors">
-                            {item}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-wrap gap-x-10 gap-y-2">
-                {items?.map((item) => (
-                  <a key={item} href="#" className="text-sm text-slate-500 hover:text-red-600 transition-colors">
-                    {item}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
+
+      <div
+        className="absolute left-0 right-0 top-full z-50 bg-white border-t border-slate-100 shadow-xl transition-all duration-200 ease-out origin-top"
+        style={{
+          opacity: open ? 1 : 0,
+          transform: open ? 'scaleY(1) translateY(0)' : 'scaleY(0.97) translateY(-4px)',
+          pointerEvents: open ? 'auto' : 'none',
+          visibility: open ? 'visible' : 'hidden',
+        }}
+      >
+        <div className="max-w-[1400px] mx-auto px-8 py-6">
+          {children ? (
+            <div className="grid grid-cols-3 lg:grid-cols-5 gap-8">
+              {Object.entries(children).map(([group, subitems]) => (
+                <div key={group}>
+                  <p className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">{group}</p>
+                  <ul className="space-y-2">
+                    {subitems.map((item) => (
+                      <li key={item}>
+                        <a href="#" className="text-sm text-slate-500 hover:text-red-600 transition-colors">
+                          {item}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-x-10 gap-y-2">
+              {items?.map((item) => (
+                <a key={item} href="#" className="text-sm text-slate-500 hover:text-red-600 transition-colors">
+                  {item}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

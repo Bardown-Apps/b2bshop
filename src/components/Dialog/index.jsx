@@ -1,35 +1,64 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { X } from 'lucide-react'
+
+const DURATION = 250
 
 const Dialog = ({ open, onClose, title, children }) => {
   const overlayRef = useRef(null)
+  const [mounted, setMounted] = useState(false)
+  const [visible, setVisible] = useState(false)
+
+  const startClose = useCallback(() => {
+    setVisible(false)
+    setTimeout(() => {
+      setMounted(false)
+      onClose()
+    }, DURATION)
+  }, [onClose])
 
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') onClose()
-    }
     if (open) {
-      document.addEventListener('keydown', handleEsc)
+      setMounted(true)
+      requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)))
       document.body.style.overflow = 'hidden'
+    } else if (mounted) {
+      startClose()
     }
-    return () => {
-      document.removeEventListener('keydown', handleEsc)
-      document.body.style.overflow = ''
-    }
-  }, [open, onClose])
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    if (!mounted) return
+    const handleEsc = (e) => { if (e.key === 'Escape') startClose() }
+    document.addEventListener('keydown', handleEsc)
+    return () => document.removeEventListener('keydown', handleEsc)
+  }, [mounted, startClose])
+
+  if (!mounted) return null
 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4"
-      onClick={(e) => e.target === overlayRef.current && onClose()}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 transition-all"
+      style={{
+        backgroundColor: visible ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)',
+        backdropFilter: visible ? 'blur(4px)' : 'blur(0px)',
+        transitionDuration: `${DURATION}ms`,
+      }}
+      onClick={(e) => e.target === overlayRef.current && startClose()}
     >
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in-95">
+      <div
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-md transition-all"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? 'scale(1) translateY(0)' : 'scale(0.95) translateY(12px)',
+          transitionDuration: `${DURATION}ms`,
+          transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        }}
+      >
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
           <h2 className="text-lg font-bold text-slate-900">{title}</h2>
-          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
+          <button onClick={startClose} className="p-1.5 text-slate-500 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>

@@ -4,11 +4,11 @@ import { PROFILE } from '@/constants/dashboard'
 
 const SalesRepSection = () => (
   <DashboardCard className="p-6 md:p-8 flex items-center gap-6">
-    <div className="w-12 h-12 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 flex items-center justify-center shrink-0">
       <User className="w-6 h-6" />
     </div>
     <div className="flex-1">
-      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
         Sales Representative
       </h3>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">

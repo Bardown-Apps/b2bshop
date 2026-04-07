@@ -4,9 +4,9 @@ import { PROFILE } from '@/constants/dashboard'
 const { salesRep } = PROFILE
 
 const SalesRepCard = () => (
-  <div className="bg-white border border-slate-200 rounded-lg p-6 shadow-sm">
+  <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200">
     <div className="flex items-center gap-3 mb-4">
-      <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center">
+      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
         <User className="w-4 h-4 text-slate-500" />
       </div>
       <h2 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Your Sales Representative</h2>

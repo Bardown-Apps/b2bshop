@@ -9,9 +9,9 @@ const UserCard = ({ user }) => {
     .join('')
 
   return (
-    <div className="border border-slate-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-5 flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold shrink-0">
+    <div className="border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+      <div className="p-5 md:p-6 flex items-start gap-4">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold shrink-0">
           {initials}
         </div>
 
@@ -29,16 +29,16 @@ const UserCard = ({ user }) => {
           </div>
 
           <div className="flex items-center gap-1.5 text-xs text-slate-600 mb-1">
-            <Shield className="w-3.5 h-3.5 text-slate-400" />
+            <Shield className="w-3.5 h-3.5 text-slate-500" />
             <span className="font-medium">{user.role}</span>
-            <span className="text-slate-400">—</span>
-            <span className="text-slate-400">{USER_ROLES[user.role]}</span>
+            <span className="text-slate-500">—</span>
+            <span className="text-slate-500">{USER_ROLES[user.role]}</span>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-xs text-slate-400">
+      <div className="border-t border-slate-100 px-5 md:px-6 py-3 flex items-center justify-between">
+        <span className="flex items-center gap-1.5 text-xs text-slate-500">
           <Clock className="w-3.5 h-3.5" />
           {user.lastLogin === '—' ? 'Not yet logged in' : `Last login ${user.lastLogin}`}
         </span>
@@ -48,7 +48,7 @@ const UserCard = ({ user }) => {
               Edit
             </button>
           )}
-          <button className="text-xs font-medium text-slate-400 hover:text-red-600 transition-colors cursor-pointer">
+          <button className="text-xs font-medium text-slate-500 hover:text-red-600 transition-colors cursor-pointer">
             {user.status === 'Deactivated' ? 'Reactivate' : 'Deactivate'}
           </button>
         </div>

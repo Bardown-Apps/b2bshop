@@ -13,11 +13,11 @@ const OrderCard = ({ order }) => {
   const color = STATUS_COLORS[order.status] ?? 'text-slate-600'
 
   return (
-    <div className="border border-slate-200 rounded bg-white overflow-hidden shadow-sm">
+    <div className="border border-slate-200 rounded-xl bg-white overflow-hidden shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
       <div className="flex flex-col sm:flex-row sm:items-stretch sm:divide-x divide-slate-200">
-        <div className="flex-1 p-5">
+        <div className="flex-1 p-5 md:p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Package className="w-4 h-4 text-slate-400" />
+            <Package className="w-4 h-4 text-slate-500" />
             <span className={`text-xs font-bold uppercase tracking-wider ${color}`}>{order.status}</span>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-3">

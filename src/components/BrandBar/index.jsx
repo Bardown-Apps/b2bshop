@@ -1,18 +1,18 @@
 import { BRANDS } from '@/constants/navigation'
 
+const doubled = [...BRANDS, ...BRANDS]
+
 const BrandBar = () => (
-  <section className="bg-white border-y border-slate-100 py-4 md:py-6">
-    <div className="max-w-[1400px] mx-auto px-4 md:px-8">
-      <div className="flex items-center justify-center flex-wrap gap-4 sm:gap-8 md:gap-16">
-        {BRANDS.map((brand) => (
-          <span
-            key={brand}
-            className="text-xs sm:text-sm font-bold text-slate-400 hover:text-slate-700 transition-colors uppercase tracking-widest cursor-pointer"
-          >
-            {brand}
-          </span>
-        ))}
-      </div>
+  <section className="bg-slate-50 border-y border-slate-100 py-5 md:py-7 overflow-hidden">
+    <div className="flex animate-marquee whitespace-nowrap hover:[animation-play-state:paused]">
+      {doubled.map((brand, i) => (
+        <span
+          key={`${brand}-${i}`}
+          className="mx-6 sm:mx-10 md:mx-16 text-xs sm:text-sm font-bold text-slate-500 hover:text-red-600 transition-colors duration-300 uppercase tracking-[0.2em] cursor-pointer shrink-0 select-none"
+        >
+          {brand}
+        </span>
+      ))}
     </div>
   </section>
 )

@@ -1,21 +1,38 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Building2 } from "lucide-react";
+import { Building2, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { PROFILE, SIDEBAR_LINKS } from "@/constants/dashboard";
 
-const SidebarLink = ({ href, icon: Icon, label, active }) => {
-  const baseClasses =
-    "flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150";
+const SidebarLink = ({
+  href,
+  icon: Icon,
+  label,
+  active,
+  collapsed,
+  onClick,
+}) => {
+  const base = collapsed
+    ? "flex items-center justify-center w-9 h-9 rounded-lg transition-all duration-200"
+    : "flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200";
   const activeClasses = "bg-slate-900 text-white shadow-sm";
   const inactiveClasses =
     "text-slate-600 hover:bg-slate-100 hover:text-slate-900";
 
+  const content = collapsed ? (
+    <Icon className="w-[16px] h-[16px]" />
+  ) : (
+    <>
+      <Icon className="w-[18px] h-[18px] shrink-0" />
+      <span className="truncate">{label}</span>
+    </>
+  );
+
   if (href === "#") {
     return (
       <span
-        className={`${baseClasses} ${inactiveClasses} cursor-default opacity-50`}
+        className={`${base} ${inactiveClasses} cursor-default opacity-40`}
+        title={collapsed ? label : undefined}
       >
-        <Icon className="w-[18px] h-[18px]" />
-        {label}
+        {content}
       </span>
     );
   }
@@ -23,55 +40,111 @@ const SidebarLink = ({ href, icon: Icon, label, active }) => {
   return (
     <NavLink
       to={href}
-      className={`${baseClasses} ${active ? activeClasses : inactiveClasses}`}
+      onClick={onClick}
+      className={`${base} ${active ? activeClasses : inactiveClasses}`}
+      title={collapsed ? label : undefined}
     >
-      <Icon className="w-[18px] h-[18px]" />
-      {label}
+      {content}
     </NavLink>
   );
 };
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ onNavigate, collapsed, onToggleCollapse }) => {
   const { pathname } = useLocation();
+  const isCollapsible = typeof onToggleCollapse === "function";
 
   return (
-    <aside className="w-full lg:w-60 shrink-0 space-y-4">
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-6 flex flex-col items-center text-center">
-        <div className="w-14 h-14 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mb-3">
-          <Building2 className="w-7 h-7" />
-        </div>
-        <h3 className="text-sm font-semibold text-slate-900">
-          {PROFILE.companyName}
-        </h3>
-        <span className="mt-1 inline-block text-[11px] font-medium text-slate-400 bg-slate-50 border border-slate-100 rounded-full px-2.5 py-0.5">
-          {PROFILE.accountNumber}
-        </span>
-      </div>
-
-      <nav className="bg-white rounded-2xl border border-slate-200 shadow-sm py-3">
-        {SIDEBAR_LINKS.map(({ group, items }, idx) => (
-          <div key={group}>
-            {idx > 0 && <hr className="border-slate-100 my-2 mx-4" />}
-            <div className="px-4 pt-2 pb-4">
-              <p className="text-[14px] font-semibold text-slate-400 uppercase tracking-widest">
-                {group}
-              </p>
-            </div>
-            <ul className="px-2 space-y-0.5">
-              {items.map(({ label, icon, href }) => (
-                <li key={label}>
-                  <SidebarLink
-                    href={href}
-                    icon={icon}
-                    label={label}
-                    active={pathname === href}
-                  />
-                </li>
-              ))}
-            </ul>
+    <aside
+      className={`shrink-0 transition-all duration-300 ease-out ${collapsed ? "w-full lg:w-[52px]" : "w-full lg:w-60"}`}
+    >
+      <div className={`space-y-3 ${collapsed ? "lg:space-y-2" : ""}`}>
+        {/* Profile card */}
+        <div
+          className={`bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col items-center text-center overflow-hidden transition-all duration-300 ${
+            collapsed ? "px-2 py-3" : "px-5 py-6"
+          }`}
+        >
+          <div
+            className={`rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 flex items-center justify-center transition-all duration-300 ${
+              collapsed ? "w-8 h-8" : "w-14 h-14 mb-3"
+            }`}
+          >
+            <Building2
+              className={`transition-all duration-300 ${collapsed ? "w-4 h-4" : "w-7 h-7"}`}
+            />
           </div>
-        ))}
-      </nav>
+          {!collapsed && (
+            <>
+              <h3 className="text-sm font-semibold text-slate-900 whitespace-nowrap">
+                {PROFILE.companyName}
+              </h3>
+              <span className="mt-1.5 inline-block text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-100 rounded-full px-3 py-1">
+                {PROFILE.accountNumber}
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Nav links */}
+        <nav
+          className={`bg-white rounded-2xl border border-slate-200 shadow-sm transition-all duration-300 ${
+            collapsed ? "py-2 px-1.5" : "py-3"
+          }`}
+        >
+          {SIDEBAR_LINKS.map(({ group, items }, idx) => (
+            <div key={group}>
+              {idx > 0 && (
+                <hr
+                  className={`border-slate-100 ${collapsed ? "my-1.5 mx-1" : "my-2 mx-4"}`}
+                />
+              )}
+              {!collapsed && (
+                <div className="px-4 pt-3 pb-2">
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em]">
+                    {group}
+                  </p>
+                </div>
+              )}
+              <ul
+                className={`space-y-0.5 ${collapsed ? "flex flex-col items-center" : "px-2"}`}
+              >
+                {items.map(({ label, icon, href }) => (
+                  <li key={label}>
+                    <SidebarLink
+                      href={href}
+                      icon={icon}
+                      label={label}
+                      active={pathname === href}
+                      collapsed={collapsed}
+                      onClick={onNavigate}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+
+        {/* Collapse toggle */}
+        {isCollapsible && (
+          <button
+            onClick={onToggleCollapse}
+            className={`hidden lg:flex w-full items-center justify-center gap-2 bg-white border border-slate-200 rounded-2xl shadow-sm text-xs font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-all duration-200 cursor-pointer ${
+              collapsed ? "py-2" : "py-2.5"
+            }`}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <ChevronsRight className="w-3.5 h-3.5" />
+            ) : (
+              <>
+                <ChevronsLeft className="w-3.5 h-3.5" />
+                <span>Collapse</span>
+              </>
+            )}
+          </button>
+        )}
+      </div>
     </aside>
   );
 };

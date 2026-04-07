@@ -27,7 +27,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
+    <div className="min-h-screen bg-white flex flex-col">
       <AnnouncementBar />
       <Header onSignIn={openLogin} />
       <HeroSection onSignIn={openLogin} />

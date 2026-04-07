@@ -1,10 +1,10 @@
 import { MapPin, Phone, Star, Pencil, Trash2 } from 'lucide-react'
 
 const AddressCard = ({ address, onSetDefault, onRemove }) => (
-  <div className={`border rounded-lg bg-white shadow-sm overflow-hidden ${address.isDefault ? 'border-blue-300 ring-1 ring-blue-100' : 'border-slate-200'}`}>
-    <div className="p-5">
+  <div className={`border rounded-xl bg-white shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 ${address.isDefault ? 'border-blue-300 ring-1 ring-blue-100' : 'border-slate-200 hover:border-slate-300'}`}>
+    <div className="p-5 md:p-6">
       <div className="flex items-center gap-2 mb-3">
-        <MapPin className="w-4 h-4 text-slate-400" />
+        <MapPin className="w-4 h-4 text-slate-500" />
         <h3 className="text-sm font-semibold text-slate-800">{address.label}</h3>
         {address.isDefault && (
           <span className="text-[11px] font-semibold uppercase tracking-wide text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
@@ -26,7 +26,7 @@ const AddressCard = ({ address, onSetDefault, onRemove }) => (
       </div>
     </div>
 
-    <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
+    <div className="border-t border-slate-100 px-5 md:px-6 py-3 flex items-center justify-between">
       <div className="flex items-center gap-4">
         {!address.isDefault ? (
           <button
@@ -37,7 +37,7 @@ const AddressCard = ({ address, onSetDefault, onRemove }) => (
             Set as Default
           </button>
         ) : (
-          <span className="text-xs text-slate-400">Primary shipping address</span>
+          <span className="text-xs text-slate-500">Primary shipping address</span>
         )}
         <button className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 transition-colors cursor-pointer">
           <Pencil className="w-3.5 h-3.5" />
@@ -46,7 +46,7 @@ const AddressCard = ({ address, onSetDefault, onRemove }) => (
       </div>
       <button
         onClick={() => onRemove(address.id)}
-        className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-red-600 transition-colors cursor-pointer"
+        className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-red-600 transition-colors cursor-pointer"
       >
         <Trash2 className="w-3.5 h-3.5" />
         Remove

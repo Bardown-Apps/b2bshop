@@ -10,11 +10,11 @@ const cards = [
 const AccountSummary = () => (
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
     {cards.map(({ label, value, icon: Icon, bg, color }) => (
-      <div key={label} className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col items-center text-center shadow-sm">
-        <div className={`w-10 h-10 rounded-full ${bg} flex items-center justify-center mb-3`}>
+      <div key={label} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col items-center text-center shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+        <div className={`w-11 h-11 rounded-full ${bg} flex items-center justify-center mb-3`}>
           <Icon className={`w-5 h-5 ${color}`} />
         </div>
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wide mb-1">{label}</p>
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">{label}</p>
         <p className="text-base font-bold text-slate-900">{value}</p>
       </div>
     ))}

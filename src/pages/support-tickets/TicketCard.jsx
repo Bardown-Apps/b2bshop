@@ -6,11 +6,11 @@ const TicketCard = ({ ticket }) => {
   const priorityStyle = TICKET_PRIORITY_STYLES[ticket.priority] ?? ''
 
   return (
-    <div className="border border-slate-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow">
-      <div className="p-5">
+    <div className="border border-slate-200 rounded-xl bg-white shadow-sm hover:shadow-md hover:border-slate-300 transition-all duration-200">
+      <div className="p-5 md:p-6">
         <div className="flex items-start justify-between gap-4 mb-3">
           <div className="flex items-center gap-2 min-w-0">
-            <TicketIcon className="w-4 h-4 text-slate-400 shrink-0" />
+            <TicketIcon className="w-4 h-4 text-slate-500 shrink-0" />
             <span className="text-sm font-bold text-blue-600">{ticket.ticketNumber}</span>
             <span className={`text-[11px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full border ${statusStyle}`}>
               {ticket.status}
@@ -38,8 +38,8 @@ const TicketCard = ({ ticket }) => {
         </div>
       </div>
 
-      <div className="border-t border-slate-100 px-5 py-3 flex items-center justify-between">
-        <span className="text-xs text-slate-400">Last updated {ticket.updatedAt}</span>
+      <div className="border-t border-slate-100 px-5 md:px-6 py-3 flex items-center justify-between">
+        <span className="text-xs text-slate-500">Last updated {ticket.updatedAt}</span>
         <button className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer">
           View Details
         </button>

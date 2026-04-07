@@ -1,3 +1,4 @@
+import AnimateIn from '@/components/AnimateIn'
 import ContactCards from './ContactCards'
 import TicketForm from './TicketForm'
 
@@ -7,8 +8,12 @@ const Support = () => (
       Support
     </h1>
 
-    <ContactCards />
-    <TicketForm />
+    <AnimateIn>
+      <ContactCards />
+    </AnimateIn>
+    <AnimateIn delay={0.1}>
+      <TicketForm />
+    </AnimateIn>
   </div>
 )
 

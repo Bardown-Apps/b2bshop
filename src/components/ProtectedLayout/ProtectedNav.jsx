@@ -1,8 +1,8 @@
-import { useLocation } from 'react-router-dom'
-import { DASHBOARD_NAV } from '@/constants/dashboard'
+import { useLocation } from "react-router-dom";
+import { DASHBOARD_NAV } from "@/constants/dashboard";
 
 const ProtectedNav = () => {
-  const { pathname } = useLocation()
+  const { pathname } = useLocation();
 
   return (
     <nav className="border-t border-slate-100">
@@ -11,18 +11,21 @@ const ProtectedNav = () => {
           <a
             key={label}
             href={href}
-            className={`px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
+            className={`relative px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
               pathname === href
-                ? 'text-slate-900 border-b-2 border-slate-900'
-                : 'text-slate-400 hover:text-slate-700'
+                ? "text-slate-900"
+                : "text-slate-500 hover:text-slate-700"
             }`}
           >
             {label}
+            {pathname === href && (
+              <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-slate-900 rounded-full" />
+            )}
           </a>
         ))}
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default ProtectedNav
+export default ProtectedNav;

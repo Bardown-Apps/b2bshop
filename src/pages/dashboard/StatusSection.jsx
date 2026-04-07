@@ -14,7 +14,7 @@ const StatusSection = () => (
 
     <DashboardCard className="p-6 md:p-8 flex flex-col justify-center items-center text-center">
       <InfoLabel icon={Wallet}>Eligible Payment</InfoLabel>
-      <p className="text-lg font-bold text-slate-900">{PROFILE.eligiblePayment}</p>
+      <p className="text-xl font-bold text-slate-900">{PROFILE.eligiblePayment}</p>
     </DashboardCard>
   </div>
 )
