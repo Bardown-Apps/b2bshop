@@ -7,6 +7,10 @@ import {
   HeadsetIcon,
   Package,
   Paintbrush,
+  CircleHelp,
+  Megaphone,
+  ClipboardList,
+  BookOpen,
   Image,
   Crown,
   Printer,
@@ -56,11 +60,61 @@ export const RECENT_ORDERS = [
 ];
 
 export const DASHBOARD_NAV = [
-  { label: "CLUB STORE", href: routes.clubStore },
+  {
+    label: "CLUB STORE",
+    href: routes.clubStore,
+    children: {
+      "": [
+        { name: "All Teams", href: routes.clubStore },
+        {
+          name: "Bow Valley Flames",
+          href: `${routes.clubStore}?team=Bow%20Valley%20Flames`,
+        },
+        {
+          name: "Cochrane Rockies",
+          href: `${routes.clubStore}?team=Cochrane%20Rockies`,
+        },
+        {
+          name: "Calgary Flames Jr.",
+          href: `${routes.clubStore}?team=Calgary%20Flames%20Jr.`,
+        },
+      ],
+    },
+  },
   { label: "DASHBOARD", href: routes.dashboard, active: true },
-  { label: "MY ACCOUNT", href: routes.account },
+  {
+    label: "ACCOUNT",
+
+    children: {
+      "": [
+        { name: "My Account", href: routes.account },
+        {
+          name: "Password & Security",
+          href: routes.security,
+        },
+        {
+          name: "Shipping Addresses",
+          href: routes.shippingAddresses,
+        },
+        {
+          name: "Saved Credit Cards",
+
+          href: routes.savedCards,
+        },
+        { name: "Account Users", href: routes.accountUsers },
+      ],
+    },
+  },
   { label: "ORDERS", href: routes.orders },
-  { label: "SUPPORT", href: routes.support },
+  {
+    label: "SUPPORT",
+    children: {
+      "": [
+        { name: "Support", href: routes.support },
+        { name: "My Support Tickets", href: routes.supportTickets },
+      ],
+    },
+  },
 ];
 
 export const SIDEBAR_LINKS = [
@@ -72,27 +126,6 @@ export const SIDEBAR_LINKS = [
     group: "MY ACCOUNT",
     items: [
       { label: "Dashboard", icon: LayoutDashboard, href: routes.dashboard },
-      {
-        label: "Password & Security",
-        icon: ShieldCheck,
-        href: routes.security,
-      },
-      {
-        label: "Shipping Addresses",
-        icon: MapPin,
-        href: routes.shippingAddresses,
-      },
-      {
-        label: "Saved Credit Cards",
-        icon: CreditCard,
-        href: routes.savedCards,
-      },
-      { label: "Account Users", icon: Users, href: routes.accountUsers },
-      {
-        label: "My Support Tickets",
-        icon: HeadsetIcon,
-        href: routes.supportTickets,
-      },
     ],
   },
   {
@@ -117,6 +150,34 @@ export const SIDEBAR_LINKS = [
         label: "FreeStyle DigitalPrint",
         icon: Printer,
         href: routes.freestyleDigitalPrint,
+      },
+    ],
+  },
+
+  {
+    group: "MY FREESTYLE STYLE OPTIONS",
+    items: [
+      {
+        label: "Graphic Request",
+        icon: Paintbrush,
+        href: routes.graphicRequest,
+      },
+      { label: "FAQ", icon: CircleHelp, href: routes.faq },
+      {
+        label: "Announcements",
+        icon: Megaphone,
+        href: routes.announcements,
+      },
+      {
+        label: "Order Form",
+        icon: ClipboardList,
+        href: routes.orderForm,
+      },
+
+      {
+        label: "Create Look Book",
+        icon: BookOpen,
+        href: routes.createLookBook,
       },
     ],
   },

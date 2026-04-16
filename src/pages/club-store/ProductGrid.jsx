@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search, ShoppingCart } from 'lucide-react'
-import { CATEGORIES, PRODUCTS } from '@/constants/clubStore'
+import { CATEGORIES, FILTER_OPTIONS, PRODUCTS } from '@/constants/clubStore'
 import StoreFilters from './StoreFilters'
 import StoreProductCard from './StoreProductCard'
 
 const parsePrice = (str) => parseFloat(str.replace(/[^0-9.]/g, '')) || 0
 
 const ProductGrid = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [activeCategory, setActiveCategory] = useState('All')
   const [search, setSearch] = useState('')
   const [animating, setAnimating] = useState(false)
@@ -18,6 +21,25 @@ const ProductGrid = () => {
     priceMin: '',
     priceMax: '',
   })
+  const selectedTeam = searchParams.get('team')?.trim() || ''
+
+  useEffect(() => {
+    if (!selectedTeam) {
+      setFilters((prev) =>
+        prev.Clubs.length > 0 ? { ...prev, Clubs: [] } : prev,
+      )
+      return
+    }
+
+    const isValidTeam = FILTER_OPTIONS.Clubs.includes(selectedTeam)
+    if (!isValidTeam) return
+
+    setFilters((prev) => {
+      const alreadySelected =
+        prev.Clubs.length === 1 && prev.Clubs[0] === selectedTeam
+      return alreadySelected ? prev : { ...prev, Clubs: [selectedTeam] }
+    })
+  }, [selectedTeam])
 
   const filtered = PRODUCTS.filter((p) => {
     const matchCat = activeCategory === 'All' || p.category === activeCategory
@@ -45,6 +67,17 @@ const ProductGrid = () => {
 
   const handleFilterChange = (key, values) => {
     setFilters((prev) => ({ ...prev, [key]: values }))
+
+    if (key === 'Clubs') {
+      const nextParams = new URLSearchParams(searchParams)
+      if (values.length === 1) {
+        nextParams.set('team', values[0])
+      } else {
+        nextParams.delete('team')
+      }
+      setSearchParams(nextParams, { replace: true })
+    }
+
     setGridKey((k) => k + 1)
   }
 

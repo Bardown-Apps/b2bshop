@@ -27,7 +27,7 @@ const LoginDialog = ({ open, onClose, onSuccess }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} title="Sign In to Bardown B2B">
+    <Dialog open={open} onClose={onClose} title="Sign In to BD/BARDOWN">
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
         <FieldError message={error} />
         <div>

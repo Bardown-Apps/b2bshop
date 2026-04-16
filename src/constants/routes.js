@@ -1,6 +1,9 @@
 const routes = {
   home: "/",
   catalogues: "/catalogues",
+  sportsCatalogue: "/sports-catalogue",
+  headwearCatalogue: "/headwear-catalogue",
+  apparelCatalogue: "/apparel-catalogue",
   brandCatalogues: "/catalogues/brand/:brandSlug",
   brandCatalogue: (brandSlug = ":brandSlug") =>
     `/catalogues/brand/${brandSlug}`,
@@ -18,6 +21,12 @@ const routes = {
   savedCards: "/saved-cards",
   shippingAddresses: "/shipping-addresses",
   security: "/security",
+  comingSoon: "/coming-soon",
+  graphicRequest: "/graphic-request",
+  faq: "/faq",
+  announcements: "/announcements",
+  orderForm: "/order-form",
+  createLookBook: "/create-look-book",
 };
 
 export default routes;

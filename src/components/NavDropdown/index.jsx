@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
-const NavDropdown = ({ label, children, items }) => {
+const NavDropdown = ({ label, children, items, isActive = false }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -22,7 +22,11 @@ const NavDropdown = ({ label, children, items }) => {
       onMouseLeave={() => setOpen(false)}
     >
       <button
-        className="flex items-center gap-1 text-sm font-semibold tracking-wide text-slate-800 hover:text-red-600 transition-colors py-4 px-1 border-b-2 border-transparent hover:border-red-600 cursor-pointer"
+        className={`flex items-center gap-1 text-sm font-semibold tracking-wide transition-colors py-4 px-1 border-b-2 cursor-pointer ${
+          isActive
+            ? "text-red-600 border-red-600"
+            : "text-slate-800 border-transparent hover:text-red-600 hover:border-red-600"
+        }`}
         onClick={() => setOpen(!open)}
       >
         {label}
@@ -52,23 +56,26 @@ const NavDropdown = ({ label, children, items }) => {
                   </p>
                   <ul className="space-y-2">
                     {subitems.map((item) => {
-                      const isBrand = typeof item === "object" && item !== null && "name" in item;
-                      const key = isBrand ? item.name : item;
-                      const to = isBrand && item.href ? item.href : "/";
+                      const isBrand =
+                        typeof item === "object" &&
+                        item !== null &&
+                        "name" in item;
+                      const key = item;
+                      const to = item.href ? item.href : "/";
                       return (
                         <li key={key}>
                           <Link
                             to={to}
                             className={`text-sm text-slate-500 hover:text-red-600 transition-colors ${isBrand ? "flex items-center gap-2" : ""}`}
                           >
-                            {isBrand && (
+                            {/* {isBrand && (
                               <img
                                 src={item.logo}
                                 alt=""
                                 className="h-6 w-6 object-contain shrink-0"
                                 loading="lazy"
                               />
-                            )}
+                            )} */}
                             {isBrand ? item.name : item}
                           </Link>
                         </li>
@@ -81,7 +88,8 @@ const NavDropdown = ({ label, children, items }) => {
           ) : (
             <div className="flex flex-wrap gap-x-10 gap-y-3">
               {items?.map((item) => {
-                const isBrand = typeof item === "object" && item !== null && "name" in item;
+                const isBrand =
+                  typeof item === "object" && item !== null && "name" in item;
                 const key = isBrand ? item.name : item;
                 return (
                   <Link

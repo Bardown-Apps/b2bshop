@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { ChevronDown, LogOut, Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import {
+  ChevronDown,
+  LogOut,
+  Search,
+  User,
+  ShoppingCart,
+  Menu,
+  X,
+} from "lucide-react";
 import NavBar from "@/components/Header/NavBar";
 import MobileMenu from "@/components/Header/MobileMenu";
 import routes from "@/constants/routes";
@@ -68,7 +76,7 @@ const Header = ({ onSignIn }) => {
         <div className="flex-1 flex justify-center">
           <Link to="/" className="group">
             <span className="text-2xl font-bold tracking-tight text-slate-900 group-hover:text-red-600 transition-colors">
-              Bardown B2B
+              BD/BARDOWN
             </span>
           </Link>
         </div>

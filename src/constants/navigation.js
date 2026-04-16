@@ -29,6 +29,14 @@ const CATALOGUES = [
     link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578543/B2B%20Store/Cataloges/100_MPH_Baseball_Catalogue_2026_1_fdfmfh.pdf",
   },
   {
+    name: "100 MPH Color Guide",
+    brand: "Bardown",
+    logo: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578398/B2B%20Store/Brands/100MPH_evtqvm.png",
+    sport: "Baseball",
+    category: "",
+    link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1776350656/B2B%20Store/Color%20Sheet/100_MPH_SC-005_Colour_Guide_-_Diamond_Mesh_Fabric_meqx3t.pdf",
+  },
+  {
     name: "Bardown Headwear & Accessories Catalogue 2026",
     brand: "Bardown",
     logo: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578397/B2B%20Store/Brands/Bardown_aiwt4a.png",
@@ -51,6 +59,15 @@ const CATALOGUES = [
     sport: "",
     category: "Collegiate",
     link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578546/B2B%20Store/Cataloges/Bardown_Collegiate-catalogue-2026_1_z40pba.pdf",
+  },
+
+  {
+    name: "Sublimation",
+    brand: "Bardown",
+    logo: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578397/B2B%20Store/Brands/Bardown_aiwt4a.png",
+    sport: "",
+    category: "Sublimation",
+    link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1776350651/B2B%20Store/Color%20Sheet/Bardown_Sublimation_Colour_Guide_gc2lge.pdf",
   },
 ];
 
@@ -75,62 +92,97 @@ const BRANDS_WITH_LOGOS = [
 export const NAV = [
   { label: "NEW", href: "#new" },
   {
-    label: "CATEGORIES",
-    children: {
-      Tops: [
-        "T-Shirts",
-        "Polos",
-        "Sweatshirts & Hoodies",
-        "Tanks & Sleeveless",
-        "Long Sleeves",
-        "Pullovers",
-      ],
-      Bottoms: ["Shorts", "Pants & Joggers", "Leggings", "Skirts & Skorts"],
-      Outerwear: ["Jackets", "Vests", "Windbreakers", "Puffers & Parkas"],
-      Headwear: ["Caps & Hats", "Beanies", "Visors", "Buckets"],
-      "Bags & Accessories": [
-        "Backpacks",
-        "Duffle Bags",
-        "Socks",
-        "Gloves & Mittens",
-      ],
-    },
-  },
-  {
-    label: "BRANDS",
-    items: BRANDS_WITH_LOGOS,
-  },
-  {
-    label: "SPORT",
-    children: {
-      "Team Sports": [
-        "Baseball",
-        "Basketball",
-        "Football",
-        "Soccer",
-        "Volleyball",
-      ],
-      Individual: ["Tennis", "Track & Field", "Wrestling", "Golf"],
-      Outdoor: ["Lacrosse", "Rugby", "Hockey", "Softball"],
-    },
-  },
-  {
-    label: "CLUBS",
-    items: [
-      "Club Packages",
-      "Team Uniforms",
-      "Practice Gear",
-      "Fan Wear",
-      "Custom Orders",
-    ],
-  },
-  {
     label: "CATALOGUES",
-    href: "/catalogues",
+    href: routes.catalogues,
   },
-  { label: "CORPORATE", href: "#corporate" },
-  { label: "HEADWEAR", href: "#headwear" },
-  { label: "SUBLIMATION", href: "#sublimation" },
+  {
+    label: "SPORTS",
+    children: {
+      Sports: [
+        { name: "Hockey", href: `${routes.sportsCatalogue}?sport=Hockey` },
+        { name: "Baseball", href: `${routes.sportsCatalogue}?sport=Baseball` },
+        { name: "Lacrosse", href: `${routes.sportsCatalogue}?sport=Lacrosse` },
+      ],
+    },
+  },
+  {
+    label: "HEADWEAR",
+    children: {
+      Headwear: [
+        {
+          name: "Catalogues",
+          href: routes.headwearCatalogue,
+        },
+
+        "Color Guide",
+        "Sell Sheet",
+      ],
+    },
+  },
+  {
+    label: "APPAREL",
+    children: {
+      Apparel: [
+        { name: "Catalogues", href: routes.apparelCatalogue },
+        "Color Guide",
+        "Sell Sheet",
+      ],
+    },
+  },
+  {
+    label: "SUBLIMATION",
+    children: {
+      Sublimation: [
+        "Catalogues",
+        {
+          name: "Color Guide",
+          href: `${routes.catalogues}?category=Sublimation`,
+        },
+        "Sell Sheet",
+      ],
+    },
+  },
+  { label: "FIND A REP", href: "#find-a-rep" },
+  { label: "BECOME A DEALER", href: "#become-a-dealer" },
+  // {
+  //   label: "CATEGORIES",
+  //   children: {
+  //     Tops: [
+  //       "T-Shirts",
+  //       "Polos",
+  //       "Sweatshirts & Hoodies",
+  //       "Tanks & Sleeveless",
+  //       "Long Sleeves",
+  //       "Pullovers",
+  //     ],
+  //     Bottoms: ["Shorts", "Pants & Joggers", "Leggings", "Skirts & Skorts"],
+  //     Outerwear: ["Jackets", "Vests", "Windbreakers", "Puffers & Parkas"],
+  //     Headwear: ["Caps & Hats", "Beanies", "Visors", "Buckets"],
+  //     "Bags & Accessories": [
+  //       "Backpacks",
+  //       "Duffle Bags",
+  //       "Socks",
+  //       "Gloves & Mittens",
+  //     ],
+  //   },
+  // },
+  // {
+  //   label: "BRANDS",
+  //   items: BRANDS_WITH_LOGOS,
+  // },
+
+  // {
+  //   label: "CLUBS",
+  //   items: [
+  //     "Club Packages",
+  //     "Team Uniforms",
+  //     "Practice Gear",
+  //     "Fan Wear",
+  //     "Custom Orders",
+  //   ],
+  // },
+
+  // { label: "CORPORATE", href: "#corporate" },
 ];
 
 export const BRANDS = BRANDS_WITH_LOGOS;

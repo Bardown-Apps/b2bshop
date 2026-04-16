@@ -17,7 +17,7 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           <div className="col-span-2 md:col-span-1">
             <h4 className="text-xl font-bold tracking-tight mb-4">
-              Bardown B2B
+              BD/BARDOWN
             </h4>
             <p className="text-sm text-slate-500 leading-relaxed max-w-xs">
               Your trusted B2B wholesale partner for premium sportswear and
@@ -46,7 +46,7 @@ const Footer = () => {
         </div>
         <div className="border-t border-slate-800 mt-10 md:mt-14 pt-8 md:pt-10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-500">
-            &copy; {new Date().getFullYear()} Bardown B2B. All rights reserved.
+            &copy; {new Date().getFullYear()} BD/BARDOWN. All rights reserved.
           </p>
           <div className="flex items-center gap-8">
             <Link

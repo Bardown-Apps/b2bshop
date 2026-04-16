@@ -2,6 +2,9 @@ import { Routes, Route } from "react-router-dom";
 import routes from "@/constants/routes";
 import Home from "@pages/home";
 import Catalogues from "@/pages/catalogues";
+import SportsCatalogue from "@/pages/sports-catalogue";
+import HeadwearCatalogue from "@/pages/headwear-catalogue";
+import ApparelCatalogue from "@/pages/apparel-catalogue";
 import Dashboard from "@pages/dashboard";
 import ClubStore from "@/pages/club-store";
 import Account from "@/pages/account";
@@ -16,36 +19,33 @@ import AccountUsers from "@/pages/account-users";
 import SavedCards from "@/pages/saved-cards";
 import ShippingAddresses from "@/pages/shipping-addresses";
 import Security from "@/pages/security";
+import ComingSoonPage from "@/pages/coming-soon";
+import GraphicRequest from "@/pages/graphic-request";
+import FAQ from "@/pages/faq";
+import Announcements from "@/pages/announcements";
+import OrderForm from "@/pages/order-form";
+import CreateLookBook from "@/pages/create-look-book";
 import PublicRoute from "@/routes/PublicRoute";
 import PrivateRoute from "@/routes/PrivateRoute";
 import ProtectedLayout from "@/components/ProtectedLayout";
+import PublicLayout from "@/components/PublicLayout";
 
 const AppRoutes = () => (
   <Routes>
     <Route
-      path={routes.home}
       element={
         <PublicRoute>
-          <Home />
+          <PublicLayout />
         </PublicRoute>
       }
-    />
-    <Route
-      path={routes.catalogues}
-      element={
-        <PublicRoute>
-          <Catalogues />
-        </PublicRoute>
-      }
-    />
-    <Route
-      path={routes.brandCatalogues}
-      element={
-        <PublicRoute>
-          <Catalogues />
-        </PublicRoute>
-      }
-    />
+    >
+      <Route path={routes.home} element={<Home />} />
+      <Route path={routes.catalogues} element={<Catalogues />} />
+      <Route path={routes.brandCatalogues} element={<Catalogues />} />
+      <Route path={routes.sportsCatalogue} element={<SportsCatalogue />} />
+      <Route path={routes.headwearCatalogue} element={<HeadwearCatalogue />} />
+      <Route path={routes.apparelCatalogue} element={<ApparelCatalogue />} />
+    </Route>
 
     <Route element={<PrivateRoute />}>
       <Route element={<ProtectedLayout />}>
@@ -75,6 +75,12 @@ const AppRoutes = () => (
           element={<ShippingAddresses />}
         />
         <Route path={routes.security} element={<Security />} />
+        <Route path={routes.comingSoon} element={<ComingSoonPage />} />
+        <Route path={routes.graphicRequest} element={<GraphicRequest />} />
+        <Route path={routes.faq} element={<FAQ />} />
+        <Route path={routes.announcements} element={<Announcements />} />
+        <Route path={routes.orderForm} element={<OrderForm />} />
+        <Route path={routes.createLookBook} element={<CreateLookBook />} />
       </Route>
     </Route>
   </Routes>

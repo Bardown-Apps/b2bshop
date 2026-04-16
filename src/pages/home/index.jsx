@@ -1,40 +1,22 @@
-import { useState } from 'react'
-import { useAppDispatch } from '@/store/hooks'
-import { login } from '@/store/slices/authSlice'
-import AnnouncementBar from '@/components/AnnouncementBar'
-import Header from '@/components/Header'
-import HeroSection from '@/components/HeroSection'
-import BrandBar from '@/components/BrandBar'
-import CategoryGrid from '@/components/CategoryGrid'
-import QuickLinks from '@/components/QuickLinks'
-import TrendingSection from '@/components/TrendingSection'
-import Footer from '@/components/Footer'
-import LoginDialog from '@/components/LoginDialog'
+import HeroSection from "@/components/HeroSection";
+// import BrandBar from "@/components/BrandBar";
+import CategoryGrid from "@/components/CategoryGrid";
+import QuickLinks from "@/components/QuickLinks";
+import TrendingSection from "@/components/TrendingSection";
+import { useOutletContext } from "react-router-dom";
 
 const Home = () => {
-  const dispatch = useAppDispatch()
-  const [loginOpen, setLoginOpen] = useState(false)
-
-  const openLogin = () => setLoginOpen(true)
-
-  const handleLoginSuccess = (data) => {
-    dispatch(login(data))
-    setLoginOpen(false)
-  }
+  const { openLogin } = useOutletContext();
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
-      <AnnouncementBar />
-      <Header onSignIn={openLogin} />
+    <>
       <HeroSection onSignIn={openLogin} />
-      <BrandBar />
+      {/* <BrandBar /> */}
       <CategoryGrid onAction={openLogin} />
       <QuickLinks onAction={openLogin} />
       <TrendingSection onAction={openLogin} />
-      <Footer />
-      <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} onSuccess={handleLoginSuccess} />
-    </div>
-  )
-}
+    </>
+  );
+};
 
-export default Home
+export default Home;
