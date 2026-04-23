@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { Building2, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { PROFILE, SIDEBAR_LINKS } from "@/constants/dashboard";
+import { useSelector } from "react-redux";
 
 const SidebarLink = ({
   href,
@@ -52,6 +53,7 @@ const SidebarLink = ({
 const DashboardSidebar = ({ onNavigate, collapsed, onToggleCollapse }) => {
   const { pathname } = useLocation();
   const isCollapsible = typeof onToggleCollapse === "function";
+  const { user } = useSelector((state) => state.auth);
 
   return (
     <aside
@@ -65,24 +67,13 @@ const DashboardSidebar = ({ onNavigate, collapsed, onToggleCollapse }) => {
               collapsed ? "px-2 py-3" : "px-5 py-6"
             }`}
           >
-            {/* <div
-              className={`rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-slate-500 flex items-center justify-center transition-all duration-300 ${
-                collapsed ? "w-8 h-8" : "w-40 h-40 mb-3"
-              }`}
-            >
-              <img
-                src="https://res.cloudinary.com/dn0taoeju/image/upload/v1772220234/ShopTeamVault/Shops/3bebbce2-c465-4a18-8058-dad5dce8d0bb/ShopLogo/SFS_Logo_Vertical_Adrenalin_White_1000px_2023-08-28-15-39-46_cjvtcw.jpg"
-                alt="Adrenalin SFS"
-                className={`transition-all duration-300 ${collapsed ? "w-4 h-4" : "w-20 h-20"}`}
-              />
-            </div> */}
             {!collapsed && (
               <>
                 <h3 className="text-sm font-semibold text-slate-900 whitespace-nowrap">
-                  {PROFILE.companyName}
+                  {user?.companyName}
                 </h3>
                 <span className="mt-1.5 inline-block text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-100 rounded-full px-3 py-1">
-                  {PROFILE.accountNumber}
+                  {user?.accountNumber}
                 </span>
               </>
             )}

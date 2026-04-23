@@ -1,10 +1,5 @@
 import {
   LayoutDashboard,
-  ShieldCheck,
-  MapPin,
-  CreditCard,
-  Users,
-  HeadsetIcon,
   Package,
   Paintbrush,
   CircleHelp,
@@ -19,16 +14,10 @@ import {
 import routes from "./routes";
 
 export const PROFILE = {
-  accountNumber: "ACC-2847",
-  companyName: "Adrenalin SFS",
   customerSince: "04/07/2026",
   discountStatus: "Gold Tier",
   eligiblePayment: "Net 30",
-  salesRep: {
-    name: "Sarah Johnson",
-    email: "sarah.j@b2bshop.com",
-    phone: "(555) 234-5678",
-  },
+
   address: {
     street: "1234 Commerce Blvd, Suite 200",
     city: "Portland",

@@ -75,9 +75,12 @@ const Header = ({ onSignIn }) => {
 
         <div className="flex-1 flex justify-center">
           <Link to="/" className="group">
-            <span className="text-2xl font-bold tracking-tight text-slate-900 group-hover:text-red-600 transition-colors">
-              BD/BARDOWN
-            </span>
+            <img
+              src="https://www.gobardown.com/cdn/shop/files/bardown_BD_logo_160x.png?v=1682392618"
+              alt="Adrenalin Source for Sports"
+              className="object-contain"
+              loading="lazy"
+            />
           </Link>
         </div>
 

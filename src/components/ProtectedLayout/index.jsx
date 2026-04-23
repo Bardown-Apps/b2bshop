@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import { useNavigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import routes from "@/constants/routes";
-import { LogOut, Search, User, Menu, X } from "lucide-react";
+import { LogOut, Search, User, Menu, X, Store } from "lucide-react";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import ProtectedNav from "./ProtectedNav";
 import DashboardSidebar from "@/components/DashboardSidebar";
@@ -15,6 +16,7 @@ const ProtectedLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -28,12 +30,18 @@ const ProtectedLayout = () => {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
           <div className="hidden md:flex items-center">
-            <img
-              src="https://res.cloudinary.com/dn0taoeju/image/upload/v1772220234/ShopTeamVault/Shops/3bebbce2-c465-4a18-8058-dad5dce8d0bb/ShopLogo/SFS_Logo_Vertical_Adrenalin_White_1000px_2023-08-28-15-39-46_cjvtcw.jpg"
-              alt="Adrenalin Source for Sports"
-              className="h-12 w-auto rounded-md object-contain bg-slate-900 p-1"
-              loading="lazy"
-            />
+            {user?.companyLogo ? (
+              <img
+                src={user?.companyLogo}
+                alt="Adrenalin Source for Sports"
+                className="h-10 w-auto rounded-md object-contain bg-slate-900 p-1"
+                loading="lazy"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-md bg-slate-900 text-white flex items-center justify-center">
+                <Store className="w-5 h-5" />
+              </div>
+            )}
           </div>
           <div className="hidden md:flex items-center w-60 bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-red-300 transition-all">
             <Search className="w-4 h-4 text-slate-500 mr-2 shrink-0" />
@@ -60,7 +68,12 @@ const ProtectedLayout = () => {
               to="/"
               className="text-2xl font-bold tracking-tight text-slate-900 hover:text-red-600 transition-colors"
             >
-              BD/BARDOWN
+              <img
+                src="https://www.gobardown.com/cdn/shop/files/bardown_BD_logo_160x.png?v=1682392618"
+                alt="BD/BARDOWN"
+                className="w-auto object-contain"
+                loading="lazy"
+              />
             </Link>
           </div>
 
@@ -68,7 +81,7 @@ const ProtectedLayout = () => {
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-200">
               <User className="w-4 h-4 text-slate-500" />
               <span className="text-xs font-medium text-slate-600">
-                Adrenalin Manager
+                {user?.companyName}
               </span>
             </div>
             <button

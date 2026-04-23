@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Dialog from "@/components/Dialog";
 import FieldError from "@/components/FieldError";
-import { fakeLogin } from "@/services/authService";
+import { login } from "@/services/authService";
 
 const LoginDialog = ({ open, onClose, onSuccess }) => {
   const [error, setError] = useState("");
@@ -12,13 +12,13 @@ const LoginDialog = ({ open, onClose, onSuccess }) => {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { email: "adrenalin@test.com", password: "password" },
+    defaultValues: { email: "", password: "" },
   });
 
   const onSubmit = async (values) => {
     setError("");
     try {
-      const data = await fakeLogin(values);
+      const data = await login(values);
       onSuccess(data);
       reset();
     } catch (err) {
@@ -27,9 +27,21 @@ const LoginDialog = ({ open, onClose, onSuccess }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} title="Sign In to BD/BARDOWN">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title={
+        <span className="flex w-full justify-center">
+          <img
+            src="https://www.gobardown.com/cdn/shop/files/bardown_BD_logo_160x.png?v=1682392618"
+            alt="BD/BARDOWN"
+            className="h-8 w-auto object-contain"
+            loading="lazy"
+          />
+        </span>
+      }
+    >
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
-        <FieldError message={error} />
         <div>
           <label
             htmlFor="email"
@@ -66,12 +78,22 @@ const LoginDialog = ({ open, onClose, onSuccess }) => {
           />
           <FieldError message={errors.password?.message} />
         </div>
+
+        <FieldError message={error} />
+
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold rounded-lg text-sm uppercase tracking-wide transition-all cursor-pointer disabled:cursor-not-allowed"
+          className="w-full py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-bold rounded-lg text-sm uppercase tracking-wide transition-all cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isSubmitting ? "Signing in..." : "Sign In"}
+          {isSubmitting ? (
+            <>
+              <span className="h-4 w-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign In"
+          )}
         </button>
       </form>
     </Dialog>

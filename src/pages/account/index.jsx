@@ -1,12 +1,12 @@
-import { useState } from 'react'
-import { useForm, FormProvider } from 'react-hook-form'
-import { CheckCircle2 } from 'lucide-react'
-import { PROFILE } from '@/constants/dashboard'
-import AnimateIn from '@/components/AnimateIn'
-import AccountSummary from './AccountSummary'
-import SalesRepCard from './SalesRepCard'
-import CompanyForm from './CompanyForm'
-import ContactInfoForm from './ContactInfoForm'
+import { useState } from "react";
+import { useForm, FormProvider } from "react-hook-form";
+import { CheckCircle2 } from "lucide-react";
+import { PROFILE } from "@/constants/dashboard";
+import AnimateIn from "@/components/AnimateIn";
+import AccountSummary from "./AccountSummary";
+import SalesRepCard from "./SalesRepCard";
+import CompanyForm from "./CompanyForm";
+import ContactInfoForm from "./ContactInfoForm";
 
 const defaultValues = {
   companyName: PROFILE.companyName,
@@ -19,20 +19,23 @@ const defaultValues = {
   phone: PROFILE.contact.phone,
   customerSince: PROFILE.customerSince,
   accountNumber: PROFILE.accountNumber,
-}
+};
 
 const Account = () => {
-  const [saved, setSaved] = useState(false)
-  const methods = useForm({ defaultValues })
+  const [saved, setSaved] = useState(false);
+  const methods = useForm({ defaultValues });
 
   const onSubmit = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
-  }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 3000);
+  };
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
+      <form
+        onSubmit={methods.handleSubmit(onSubmit)}
+        className="space-y-8 max-w-3xl"
+      >
         <h1 className="text-sm font-bold text-slate-700 uppercase tracking-widest border-b border-slate-200 pb-3">
           My Account
         </h1>
@@ -61,14 +64,14 @@ const Account = () => {
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Saved
                 </>
               ) : (
-                'Save Changes'
+                "Save Changes"
               )}
             </button>
           </div>
         </AnimateIn>
       </form>
     </FormProvider>
-  )
-}
+  );
+};
 
-export default Account
+export default Account;

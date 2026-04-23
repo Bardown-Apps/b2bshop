@@ -1,7 +1,12 @@
 import AppRoutes from '@/routes/AppRoutes'
+import { AxiosInterceptor } from '@/services/http'
 
 function App() {
-  return <AppRoutes />
+  return (
+    <AxiosInterceptor>
+      <AppRoutes />
+    </AxiosInterceptor>
+  )
 }
 
 export default App
