@@ -1,29 +1,40 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { CheckCircle2 } from "lucide-react";
-import { PROFILE } from "@/constants/dashboard";
+import { useSelector } from "react-redux";
+import moment from "moment";
 import AnimateIn from "@/components/AnimateIn";
 import AccountSummary from "./AccountSummary";
 import SalesRepCard from "./SalesRepCard";
 import CompanyForm from "./CompanyForm";
 import ContactInfoForm from "./ContactInfoForm";
 
-const defaultValues = {
-  companyName: PROFILE.companyName,
-  address: PROFILE.address.street,
-  city: PROFILE.address.city,
-  province: PROFILE.address.province,
-  postalCode: PROFILE.address.postalCode,
-  country: PROFILE.address.country,
-  email: PROFILE.contact.email,
-  phone: PROFILE.contact.phone,
-  customerSince: PROFILE.customerSince,
-  accountNumber: PROFILE.accountNumber,
-};
-
 const Account = () => {
+  const { user } = useSelector((state) => state.auth);
   const [saved, setSaved] = useState(false);
+  const defaultValues = useMemo(() => {
+    const createdDate = Number(user?.createdDate);
+
+    return {
+      companyName: user?.companyName || "",
+      address: user?.address?.addressLine1 || user?.address?.street || "",
+      city: user?.address?.city || "",
+      province: user?.address?.state || user?.address?.province || "",
+      postalCode: user?.address?.zipCode || user?.address?.postalCode || "",
+      country: user?.address?.country || "",
+      email: user?.email || "",
+      phone: user?.contactNumber || user?.phoneNumber || "",
+      customerSince: createdDate
+        ? moment.unix(createdDate).format("MMM DD,YYYY")
+        : "",
+      accountNumber: user?.accountNumber || "",
+    };
+  }, [user]);
   const methods = useForm({ defaultValues });
+
+  useEffect(() => {
+    methods.reset(defaultValues);
+  }, [defaultValues, methods]);
 
   const onSubmit = () => {
     setSaved(true);
