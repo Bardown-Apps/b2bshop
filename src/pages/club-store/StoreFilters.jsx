@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import { SlidersHorizontal, ChevronDown, RotateCcw } from 'lucide-react'
-import { FILTER_OPTIONS } from '@/constants/clubStore'
+import { useSelector } from 'react-redux'
+import { getFilterOptions } from '@/constants/clubStore'
 
 const CheckboxFilterGroup = ({ label, options, selected, onChange, defaultOpen = false }) => {
   const [open, setOpen] = useState(defaultOpen)
@@ -153,48 +154,53 @@ const CHECKBOX_FILTERS = [
   { label: 'Color', defaultOpen: false },
 ]
 
-const StoreFilters = ({ filters, onChange, onReset, activeCount }) => (
-  <div>
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100">
-        <div className="flex items-center gap-2">
-          <SlidersHorizontal className="w-4 h-4 text-slate-500" />
-          <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Filters</span>
+const StoreFilters = ({ filters, onChange, onReset, activeCount }) => {
+  const clubs = useSelector((state) => state.clubs.list)
+  const filterOptions = useMemo(() => getFilterOptions(clubs), [clubs])
+
+  return (
+    <div>
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">Filters</span>
+            {activeCount > 0 && (
+              <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                {activeCount}
+              </span>
+            )}
+          </div>
           {activeCount > 0 && (
-            <span className="w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
-              {activeCount}
-            </span>
+            <button
+              onClick={onReset}
+              className="text-[11px] font-medium text-slate-500 hover:text-red-500 transition-colors cursor-pointer flex items-center gap-1"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Reset
+            </button>
           )}
         </div>
-        {activeCount > 0 && (
-          <button
-            onClick={onReset}
-            className="text-[11px] font-medium text-slate-500 hover:text-red-500 transition-colors cursor-pointer flex items-center gap-1"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Reset
-          </button>
-        )}
-      </div>
-      <div className="px-4">
-        {CHECKBOX_FILTERS.map(({ label, defaultOpen }) => (
-          <CheckboxFilterGroup
-            key={label}
-            label={label}
-            options={FILTER_OPTIONS[label]}
-            selected={filters[label]}
+        <div className="px-4">
+          {CHECKBOX_FILTERS.map(({ label, defaultOpen }) => (
+            <CheckboxFilterGroup
+              key={label}
+              label={label}
+              options={filterOptions[label]}
+              selected={filters[label]}
+              onChange={onChange}
+              defaultOpen={defaultOpen}
+            />
+          ))}
+          <PriceFilterGroup
+            priceMin={filters.priceMin}
+            priceMax={filters.priceMax}
             onChange={onChange}
-            defaultOpen={defaultOpen}
           />
-        ))}
-        <PriceFilterGroup
-          priceMin={filters.priceMin}
-          priceMax={filters.priceMax}
-          onChange={onChange}
-        />
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default StoreFilters

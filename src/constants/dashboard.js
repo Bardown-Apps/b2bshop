@@ -48,26 +48,21 @@ export const RECENT_ORDERS = [
   },
 ];
 
-export const DASHBOARD_NAV = [
+export const getDashboardNav = (clubs = []) => [
   {
     label: "CLUB STORE",
     href: routes.clubStore,
     children: {
       "": [
-        { name: "All Teams", href: routes.clubStore },
-        {
-          name: "Bow Valley Flames",
-          href: `${routes.clubStore}?team=Bow%20Valley%20Flames`,
-        },
-        {
-          name: "Cochrane Rockies",
-          href: `${routes.clubStore}?team=Cochrane%20Rockies`,
-        },
-        {
-          name: "Calgary Flames Jr.",
-          href: `${routes.clubStore}?team=Calgary%20Flames%20Jr.`,
-        },
-      ],
+        ...clubs.map((club) => {
+          const teamName = club?.clubName;
+
+          return {
+            name: teamName,
+            href: `${routes.clubStore}?team=${encodeURIComponent(teamName)}`,
+          };
+        }),
+      ].filter((item) => Boolean(item.name) || item.href === routes.clubStore),
     },
   },
   { label: "DASHBOARD", href: routes.dashboard, active: true },

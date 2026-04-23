@@ -30,7 +30,12 @@ const getGroupedItems = (items, key, fallbackLabel = "General") => {
 const normalizeValue = (value = "") =>
   value.toLowerCase().replace(/[^a-z0-9]+/g, "");
 
-const CatalogueSection = ({ groups, onOpenCatalogue, activeAccordions, onToggleAccordion }) => (
+const CatalogueSection = ({
+  groups,
+  onOpenCatalogue,
+  activeAccordions,
+  onToggleAccordion,
+}) => (
   <section className="mt-8 md:mt-10 space-y-8 md:space-y-10">
     {groups.map(([groupName, items]) => (
       <div
@@ -90,7 +95,9 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
     }
 
     if (isCategoryQueryView) {
-      return normalizeValue(catalogue.category) === normalizeValue(categoryFilter);
+      return (
+        normalizeValue(catalogue.category) === normalizeValue(categoryFilter)
+      );
     }
 
     if (brandSlug) {
@@ -102,6 +109,10 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
   const brandGroups = getGroupedItems(filteredCatalogues, "brand");
   const categoryGroups = getGroupedItems(filteredCatalogues, "category");
   const sportGroups = getGroupedItems(filteredCatalogues, "sport");
+  const colorGuideGroups = getGroupedItems(filteredCatalogues, "colorGuide");
+
+  console.log(colorGuideGroups);
+
   const sectionViews = [
     {
       id: "brand",
@@ -120,6 +131,12 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
       label: "By Sport",
       icon: Trophy,
       groups: sportGroups,
+    },
+    {
+      id: "colorGuide",
+      label: "Color Guide",
+      icon: Trophy,
+      groups: colorGuideGroups,
     },
   ];
   const activeSection =
@@ -160,9 +177,9 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
                 ? mode === "category-fixed"
                   ? categoryFilter
                   : `${categoryFilter} Catalogues`
-              : brandSlug && filteredCatalogues.length > 0
-                ? `${filteredCatalogues[0].brand} Catalogues`
-                : "Catalogues"}
+                : brandSlug && filteredCatalogues.length > 0
+                  ? `${filteredCatalogues[0].brand} Catalogues`
+                  : "Catalogues"}
           </h1>
           <p className="text-sm md:text-base text-slate-600 mt-3 mb-8 md:mb-10">
             {mode === "sport-query"
@@ -171,21 +188,23 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
                 : "Select a sport from the navigation to browse related catalogues."
               : isCategoryQueryView
                 ? "Browse catalogues for this category. Open any catalogue to view the full document."
-              : brandSlug
-                ? "Browse catalogues for this brand. Open any catalogue to view the full document."
-                : "Browse our latest sport and apparel catalogues. Open any catalogue to view the full document."}
+                : brandSlug
+                  ? "Browse catalogues for this brand. Open any catalogue to view the full document."
+                  : "Browse our latest sport and apparel catalogues. Open any catalogue to view the full document."}
           </p>
-          {(mode === "sport-query"
-            ? sportQuery.trim() && filteredCatalogues.length === 0
-            : isCategoryQueryView
-              ? filteredCatalogues.length === 0
-            : brandSlug && filteredCatalogues.length === 0) ? (
+          {(
+            mode === "sport-query"
+              ? sportQuery.trim() && filteredCatalogues.length === 0
+              : isCategoryQueryView
+                ? filteredCatalogues.length === 0
+                : brandSlug && filteredCatalogues.length === 0
+          ) ? (
             <div className="rounded-xl border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3 text-sm font-medium">
               {mode === "sport-query"
                 ? "No catalogues found for this sport."
                 : isCategoryQueryView
                   ? "No catalogues found for this category."
-                : "No catalogues found for this brand."}
+                  : "No catalogues found for this brand."}
             </div>
           ) : null}
 
@@ -234,7 +253,9 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
       {activeCatalogue && (
         <div
           className="fixed inset-0 z-[70] bg-slate-950/80 backdrop-blur-sm p-2 md:p-4 flex items-center justify-center motion-safe:animate-[dialogOverlayFadeIn_220ms_ease-out]"
-          onClick={(e) => e.target === e.currentTarget && handleCloseCatalogue()}
+          onClick={(e) =>
+            e.target === e.currentTarget && handleCloseCatalogue()
+          }
         >
           <div className="h-[80vh] w-[80vw] max-w-none rounded-xl md:rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-2xl flex flex-col motion-safe:animate-[dialogPanelFadeIn_260ms_cubic-bezier(0.22,1,0.36,1)]">
             <div className="h-14 md:h-16 border-b border-slate-200 px-4 md:px-6 flex items-center justify-between gap-3">

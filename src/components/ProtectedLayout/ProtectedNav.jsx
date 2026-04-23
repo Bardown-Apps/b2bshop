@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
-import { DASHBOARD_NAV } from "@/constants/dashboard";
+import { useSelector } from "react-redux";
+import { getDashboardNav } from "@/constants/dashboard";
 
 const ProtectedNav = () => {
   const { pathname, search } = useLocation();
+  const clubs = useSelector((state) => state.clubs.list);
+  const dashboardNav = useMemo(() => getDashboardNav(clubs), [clubs]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const navRef = useRef(null);
 
@@ -22,7 +25,7 @@ const ProtectedNav = () => {
   return (
     <nav ref={navRef} className="border-t border-slate-100 relative z-50">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex items-center gap-1 overflow-x-auto md:overflow-visible">
-        {DASHBOARD_NAV.map(({ label, href, children }) => {
+        {dashboardNav.map(({ label, href, children }) => {
           const isActive = pathname === href;
           const hasChildren = Boolean(children);
 

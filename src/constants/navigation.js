@@ -34,6 +34,7 @@ const CATALOGUES = [
     logo: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578398/B2B%20Store/Brands/100MPH_evtqvm.png",
     sport: "Baseball",
     category: "",
+    colorGuide: true,
     link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1776350656/B2B%20Store/Color%20Sheet/100_MPH_SC-005_Colour_Guide_-_Diamond_Mesh_Fabric_meqx3t.pdf",
   },
   {
@@ -62,11 +63,12 @@ const CATALOGUES = [
   },
 
   {
-    name: "Sublimation",
+    name: "Sublimation Color Guide",
     brand: "Bardown",
     logo: "https://res.cloudinary.com/dn0taoeju/image/upload/v1775578397/B2B%20Store/Brands/Bardown_aiwt4a.png",
     sport: "",
-    category: "Sublimation",
+    category: "",
+    colorGuide: true,
     link: "https://res.cloudinary.com/dn0taoeju/image/upload/v1776350651/B2B%20Store/Color%20Sheet/Bardown_Sublimation_Colour_Guide_gc2lge.pdf",
   },
 ];

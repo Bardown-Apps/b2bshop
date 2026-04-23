@@ -1,93 +1,212 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { Search, ShoppingCart } from 'lucide-react'
-import { CATEGORIES, FILTER_OPTIONS, PRODUCTS } from '@/constants/clubStore'
-import StoreFilters from './StoreFilters'
-import StoreProductCard from './StoreProductCard'
+import { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Search, ShoppingCart } from "lucide-react";
+import { useSelector } from "react-redux";
+import { CATEGORIES, getFilterOptions } from "@/constants/clubStore";
+import StoreFilters from "./StoreFilters";
+import StoreProductCard from "./StoreProductCard";
 
-const parsePrice = (str) => parseFloat(str.replace(/[^0-9.]/g, '')) || 0
+const parsePrice = (value) => {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    return parseFloat(value.replace(/[^0-9.]/g, "")) || 0;
+  }
+  return 0;
+};
+
+const getCategoryName = (category) => category?.catName || "";
+
+const getCategoryImage = (category) => category?.catImg || "";
+
+const getProductName = (product) => product?.name || "";
+
+const getProductCategory = (product) => product?.category?.catName || "";
+
+const getProductClub = (product, clubs) => {
+  const club = clubs?.find((club) => club?.clubId === product?.clubId);
+  return club?.clubName || "";
+};
+
+const getProductSizes = (product) => {
+  const sizes = product?.variants?.find((v) => v?.variant === "Size")?.values;
+  if (Array.isArray(sizes) && sizes.length > 0) {
+    return sizes
+      .map((sizeItem) =>
+        typeof sizeItem === "string" ? sizeItem : sizeItem?.value,
+      )
+      .map((size) => size?.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const getProductColor = (product) => {
+  const colors = product?.variants?.find((v) => v?.variant === "Color")?.values;
+  if (Array.isArray(colors) && colors.length > 0) {
+    return colors
+      .map((colorItem) =>
+        typeof colorItem === "string" ? colorItem : colorItem?.value,
+      )
+      .map((color) => color?.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const getProductImage = (product) => product?.defaultImageUrl || "";
+
+const normalizeProduct = (product, clubs) => {
+  const priceValue =
+    product?.price ?? product?.productPrice ?? product?.prodPrice ?? 0;
+  const numericPrice = parsePrice(priceValue);
+  const formattedPrice =
+    typeof priceValue === "string" && priceValue.includes("$")
+      ? priceValue
+      : `$${numericPrice.toFixed(2)}`;
+
+  return {
+    id: product?.prodId,
+    name: getProductName(product),
+    category: getProductCategory(product),
+    club: getProductClub(product, clubs),
+    sizes: getProductSizes(product),
+    color: getProductColor(product),
+    image: getProductImage(product),
+    price: formattedPrice,
+    numericPrice,
+  };
+};
 
 const ProductGrid = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [activeCategory, setActiveCategory] = useState('All')
-  const [search, setSearch] = useState('')
-  const [animating, setAnimating] = useState(false)
-  const [gridKey, setGridKey] = useState(0)
+  const clubs = useSelector((state) => state.clubs.list);
+  const categories = useSelector((state) => state.categories.list);
+  const products = useSelector((state) => state.products.list);
+  const filterOptions = useMemo(() => getFilterOptions(clubs), [clubs]);
+  const normalizedProducts = useMemo(
+    () =>
+      products
+        .map((product) => normalizeProduct(product, clubs))
+        .filter((product) => Boolean(product.name)),
+    [products],
+  );
+  const categoryTabs = useMemo(() => {
+    const dynamicTabs = categories
+      .map((category) => ({
+        name: getCategoryName(category),
+        image: getCategoryImage(category),
+      }))
+      .filter((category) => Boolean(category.name));
+
+    const tabs =
+      dynamicTabs.length > 0
+        ? dynamicTabs
+        : CATEGORIES.filter((name) => name !== "All").map((name) => ({
+            name,
+            image: "",
+          }));
+
+    return [{ name: "All", image: "" }, ...tabs];
+  }, [categories]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [animating, setAnimating] = useState(false);
+  const [gridKey, setGridKey] = useState(0);
   const [filters, setFilters] = useState({
     Clubs: [],
     Size: [],
     Color: [],
-    priceMin: '',
-    priceMax: '',
-  })
-  const selectedTeam = searchParams.get('team')?.trim() || ''
+    priceMin: "",
+    priceMax: "",
+  });
+  const selectedTeam = searchParams.get("team")?.trim() || "";
 
   useEffect(() => {
     if (!selectedTeam) {
       setFilters((prev) =>
         prev.Clubs.length > 0 ? { ...prev, Clubs: [] } : prev,
-      )
-      return
+      );
+      return;
     }
 
-    const isValidTeam = FILTER_OPTIONS.Clubs.includes(selectedTeam)
-    if (!isValidTeam) return
+    const isValidTeam = filterOptions.Clubs.includes(selectedTeam);
+    if (!isValidTeam) return;
 
     setFilters((prev) => {
       const alreadySelected =
-        prev.Clubs.length === 1 && prev.Clubs[0] === selectedTeam
-      return alreadySelected ? prev : { ...prev, Clubs: [selectedTeam] }
-    })
-  }, [selectedTeam])
+        prev.Clubs.length === 1 && prev.Clubs[0] === selectedTeam;
+      return alreadySelected ? prev : { ...prev, Clubs: [selectedTeam] };
+    });
+  }, [selectedTeam, filterOptions.Clubs]);
 
-  const filtered = PRODUCTS.filter((p) => {
-    const matchCat = activeCategory === 'All' || p.category === activeCategory
-    const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase())
-    const matchClub = filters.Clubs.length === 0 || filters.Clubs.includes(p.club)
-    const matchSize = filters.Size.length === 0 || p.sizes.some((s) => filters.Size.includes(s))
-    const matchColor = filters.Color.length === 0 || filters.Color.some((c) => p.color.includes(c))
+  const filtered = normalizedProducts.filter((p) => {
+    const matchCat = activeCategory === "All" || p.category === activeCategory;
+    const matchSearch =
+      !search || p.name.toLowerCase().includes(search.toLowerCase());
+    const matchClub =
+      filters.Clubs.length === 0 || filters.Clubs.includes(p.club);
+    const matchSize =
+      filters.Size.length === 0 ||
+      p.sizes.some((s) => filters.Size.includes(s));
+    const matchColor =
+      filters.Color.length === 0 ||
+      filters.Color.some((c) => p.color.includes(c));
 
-    const price = parsePrice(p.price)
-    const matchMin = !filters.priceMin || price >= Number(filters.priceMin)
-    const matchMax = !filters.priceMax || price <= Number(filters.priceMax)
+    const matchMin =
+      !filters.priceMin || p.numericPrice >= Number(filters.priceMin);
+    const matchMax =
+      !filters.priceMax || p.numericPrice <= Number(filters.priceMax);
 
-    return matchCat && matchSearch && matchClub && matchSize && matchColor && matchMin && matchMax
-  })
+    return (
+      matchCat &&
+      matchSearch &&
+      matchClub &&
+      matchSize &&
+      matchColor &&
+      matchMin &&
+      matchMax
+    );
+  });
 
   const handleCategoryChange = (cat) => {
-    if (cat === activeCategory) return
-    setAnimating(true)
+    if (cat === activeCategory) return;
+    setAnimating(true);
     setTimeout(() => {
-      setActiveCategory(cat)
-      setGridKey((k) => k + 1)
-      setAnimating(false)
-    }, 150)
-  }
+      setActiveCategory(cat);
+      setGridKey((k) => k + 1);
+      setAnimating(false);
+    }, 150);
+  };
 
   const handleFilterChange = (key, values) => {
-    setFilters((prev) => ({ ...prev, [key]: values }))
+    setFilters((prev) => ({ ...prev, [key]: values }));
 
-    if (key === 'Clubs') {
-      const nextParams = new URLSearchParams(searchParams)
+    if (key === "Clubs") {
+      const nextParams = new URLSearchParams(searchParams);
       if (values.length === 1) {
-        nextParams.set('team', values[0])
+        nextParams.set("team", values[0]);
       } else {
-        nextParams.delete('team')
+        nextParams.delete("team");
       }
-      setSearchParams(nextParams, { replace: true })
+      setSearchParams(nextParams, { replace: true });
     }
 
-    setGridKey((k) => k + 1)
-  }
+    setGridKey((k) => k + 1);
+  };
 
   const handleReset = () => {
-    setFilters({ Clubs: [], Size: [], Color: [], priceMin: '', priceMax: '' })
-    setGridKey((k) => k + 1)
-  }
+    setFilters({ Clubs: [], Size: [], Color: [], priceMin: "", priceMax: "" });
+    setGridKey((k) => k + 1);
+  };
 
-  const activeFilterCount = filters.Clubs.length + filters.Size.length + filters.Color.length +
-    (filters.priceMin ? 1 : 0) + (filters.priceMax ? 1 : 0)
+  const activeFilterCount =
+    filters.Clubs.length +
+    filters.Size.length +
+    filters.Color.length +
+    (filters.priceMin ? 1 : 0) +
+    (filters.priceMax ? 1 : 0);
 
   return (
     <div className="flex flex-col h-[calc(100vh-220px)]">
@@ -98,17 +217,28 @@ const ProductGrid = () => {
         </h2>
 
         <div className="flex items-center gap-2 flex-wrap mb-5">
-          {CATEGORIES.map((cat) => (
+          {categoryTabs.map((cat) => (
             <button
-              key={cat}
-              onClick={() => handleCategoryChange(cat)}
+              key={cat.name}
+              onClick={() => handleCategoryChange(cat.name)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 border cursor-pointer ${
-                activeCategory === cat
-                  ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:shadow-sm'
+                activeCategory === cat.name
+                  ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                  : "bg-white text-slate-700 border-slate-200 hover:border-slate-400 hover:shadow-sm"
               }`}
             >
-              {cat}
+              <span className="inline-flex items-center gap-2">
+                {cat.image && (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className={`w-4 h-4 rounded-full object-cover ${
+                      activeCategory === cat.name ? "bg-white p-0.5" : ""
+                    }`}
+                  />
+                )}
+                {cat.name}
+              </span>
             </button>
           ))}
         </div>
@@ -140,13 +270,16 @@ const ProductGrid = () => {
         {/* Scrollable product grid */}
         <div className="flex-1 min-w-0 overflow-y-auto pr-1">
           <p className="text-xs text-slate-500 mb-4">
-            {filtered.length} {filtered.length === 1 ? 'product' : 'products'} found
+            {filtered.length} {filtered.length === 1 ? "product" : "products"}{" "}
+            found
           </p>
 
           {filtered.length === 0 ? (
             <div className="text-center py-16 border-2 border-dashed border-slate-200 rounded-xl animate-fade-in">
               <ShoppingCart className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm text-slate-500">No products match your filters.</p>
+              <p className="text-sm text-slate-500">
+                No products match your filters.
+              </p>
               {activeFilterCount > 0 && (
                 <button
                   onClick={handleReset}
@@ -176,7 +309,7 @@ const ProductGrid = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProductGrid
+export default ProductGrid;

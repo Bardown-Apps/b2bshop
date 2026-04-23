@@ -5,6 +5,11 @@ import { useDispatch } from "react-redux";
 import { store } from "@/store";
 import { BASE_URL } from "@/constants/services";
 import { logout } from "@/store/slices/authSlice";
+import {
+  requestFinished,
+  requestStarted,
+  resetRequests,
+} from "@/store/slices/networkSlice";
 import routes from "@/constants/routes";
 
 const HttpService = axios.create({
@@ -13,13 +18,17 @@ const HttpService = axios.create({
 
 HttpService.interceptors.request.use(
   (config) => {
+    store.dispatch(requestStarted());
     const token = store.getState()?.auth?.token;
     if (token) {
       config.headers.authorization = token;
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    store.dispatch(requestFinished());
+    return Promise.reject(error);
+  },
 );
 
 const AxiosInterceptor = ({ children }) => {
@@ -29,14 +38,19 @@ const AxiosInterceptor = ({ children }) => {
   useEffect(() => {
     const interceptor = HttpService.interceptors.response.use(
       (response) => {
+        store.dispatch(requestFinished());
         if (response?.data?.tokenExpired) {
           dispatch(logout());
+          store.dispatch(resetRequests());
           navigate(routes.home, { replace: true });
           return false;
         }
         return response;
       },
-      (error) => Promise.reject(error),
+      (error) => {
+        store.dispatch(requestFinished());
+        return Promise.reject(error);
+      },
     );
 
     return () => {
