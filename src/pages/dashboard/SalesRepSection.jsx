@@ -17,8 +17,11 @@ const SalesRepSection = () => {
           Sales Representative
         </h3>
 
-        {salesReps?.map((s) => (
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        {salesReps?.map((s, index) => (
+          <div
+            key={`${s?.email || "rep"}-${s?.phoneNumber || "phone"}-${index}`}
+            className="flex flex-wrap items-center gap-x-6 gap-y-2"
+          >
             <p className="text-base font-bold text-slate-900">{s.name}</p>
             <div className="flex items-center gap-4 text-sm">
               <a

@@ -2,12 +2,12 @@ import { Star, Trash2 } from 'lucide-react'
 import { BRAND_COLORS } from '@/constants/savedCards'
 
 const CreditCardItem = ({ card, onSetDefault, onRemove }) => {
-  const brandColor = BRAND_COLORS[card.brand] ?? 'bg-slate-600'
+  const brandColorClass = BRAND_COLORS[card.brand] ?? 'bg-slate-600'
 
   return (
     <div className={`border rounded-xl bg-white shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 ${card.isDefault ? 'border-blue-300 ring-1 ring-blue-100' : 'border-slate-200 hover:border-slate-300'}`}>
       <div className="p-5 md:p-6 flex items-start gap-4">
-        <div className={`w-14 h-9 rounded-lg ${brandColor} flex items-center justify-center text-white text-[11px] font-bold tracking-wider shrink-0`}>
+        <div className={`w-14 h-9 rounded-lg ${brandColorClass} flex items-center justify-center text-white text-[11px] font-bold tracking-wider shrink-0`}>
           {card.brand === 'Amex' ? 'AMEX' : card.brand.toUpperCase()}
         </div>
 

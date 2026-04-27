@@ -56,9 +56,11 @@ export const getDashboardNav = (clubs = []) => [
       "": [
         ...clubs.map((club) => {
           const teamName = club?.clubName;
+          const teamLogo = club?.clubLogo;
 
           return {
             name: teamName,
+            logo: teamLogo,
             href: `${routes.clubStore}?team=${encodeURIComponent(teamName)}`,
           };
         }),

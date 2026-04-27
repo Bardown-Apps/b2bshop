@@ -46,7 +46,7 @@ const HeroSection = ({ onSignIn }) => {
             <strong className="text-white">MORE</strong> choice.
           </p>
           <p
-            className="text-sm sm:text-base text-slate-500 mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 animate-fade-up"
+            className="text-sm sm:text-base text-white mb-8 md:mb-10 max-w-lg mx-auto md:mx-0 animate-fade-up"
             style={{ animationDelay: "0.4s" }}
           >
             Your custom sublimation unleashed in just 5 days.
@@ -80,7 +80,7 @@ const HeroSection = ({ onSignIn }) => {
               <p className="text-2xl sm:text-4xl font-black text-red-400">
                 {s.num}
               </p>
-              <p className="text-[10px] sm:text-xs text-slate-500 font-medium uppercase tracking-wide mt-1">
+              <p className="text-[10px] sm:text-xs text-white font-medium uppercase tracking-wide mt-1">
                 {s.label}
               </p>
             </div>

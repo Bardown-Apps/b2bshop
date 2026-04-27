@@ -7,6 +7,10 @@ import HeadwearCatalogue from "@/pages/headwear-catalogue";
 import ApparelCatalogue from "@/pages/apparel-catalogue";
 import Dashboard from "@pages/dashboard";
 import ClubStore from "@/pages/club-store";
+import Product from "@/pages/product";
+import Cart from "@/pages/cart";
+import Checkout from "@/pages/checkout";
+import Summary from "@/pages/summary";
 import Account from "@/pages/account";
 import Orders from "@/pages/orders";
 import Support from "@/pages/support";
@@ -51,6 +55,9 @@ const AppRoutes = () => (
       <Route element={<ProtectedLayout />}>
         <Route path={routes.dashboard} element={<Dashboard />} />
         <Route path={routes.clubStore} element={<ClubStore />} />
+        <Route path={routes.product} element={<Product />} />
+        <Route path={routes.cart} element={<Cart />} />
+        <Route path={routes.checkout} element={<Checkout />} />
         <Route path={routes.account} element={<Account />} />
         <Route path={routes.orders} element={<Orders />} />
         <Route path={routes.support} element={<Support />} />
@@ -81,6 +88,7 @@ const AppRoutes = () => (
         <Route path={routes.announcements} element={<Announcements />} />
         <Route path={routes.orderForm} element={<OrderForm />} />
         <Route path={routes.createLookBook} element={<CreateLookBook />} />
+        <Route path={routes.summaryOrder()} element={<Summary />} />
       </Route>
     </Route>
   </Routes>

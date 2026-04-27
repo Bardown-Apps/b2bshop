@@ -9,6 +9,8 @@ const routes = {
     `/catalogues/brand/${brandSlug}`,
   dashboard: "/dashboard",
   clubStore: "/club-store",
+  product: "/product/:prodId",
+  productDetails: (prodId = ":prodId") => `/product/${prodId}`,
   account: "/account",
   orders: "/orders",
   support: "/support",
@@ -27,6 +29,18 @@ const routes = {
   announcements: "/announcements",
   orderForm: "/order-form",
   createLookBook: "/create-look-book",
+  checkout: "/checkout",
+  contactUs: "/contact-us",
+  cart: "/cart",
+  summary: "/summary",
+  summaryOrder: (orderNumber = ":orderNumber") => `/summary/${orderNumber}`,
 };
+
+export const Home = { path: routes.home };
+export const Checkout = { path: routes.checkout };
+export const Product = { path: routes.product };
+export const ContactUs = { path: routes.contactUs };
+export const Cart = { path: routes.cart };
+export const Summary = { path: routes.summary };
 
 export default routes;

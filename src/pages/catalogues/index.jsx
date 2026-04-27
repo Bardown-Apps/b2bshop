@@ -111,8 +111,6 @@ const Catalogues = ({ mode = "brand", fixedCategory = "" }) => {
   const sportGroups = getGroupedItems(filteredCatalogues, "sport");
   const colorGuideGroups = getGroupedItems(filteredCatalogues, "colorGuide");
 
-  console.log(colorGuideGroups);
-
   const sectionViews = [
     {
       id: "brand",

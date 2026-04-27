@@ -62,20 +62,21 @@ const NavDropdown = ({ label, children, items, isActive = false }) => {
                         "name" in item;
                       const key = item;
                       const to = item.href ? item.href : "/";
+
                       return (
                         <li key={key}>
                           <Link
                             to={to}
                             className={`text-sm text-slate-500 hover:text-red-600 transition-colors ${isBrand ? "flex items-center gap-2" : ""}`}
                           >
-                            {/* {isBrand && (
+                            {isBrand && item.logo && (
                               <img
                                 src={item.logo}
                                 alt=""
                                 className="h-6 w-6 object-contain shrink-0"
                                 loading="lazy"
                               />
-                            )} */}
+                            )}
                             {isBrand ? item.name : item}
                           </Link>
                         </li>

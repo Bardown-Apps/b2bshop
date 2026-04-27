@@ -16,9 +16,26 @@ const HttpService = axios.create({
   baseURL: BASE_URL,
 });
 
+const TRACKED_REQUEST_KEY = "__networkTracked";
+const FINISHED_REQUEST_KEY = "__networkFinished";
+
+const markRequestStarted = (config) => {
+  if (!config) return config;
+  config[TRACKED_REQUEST_KEY] = true;
+  config[FINISHED_REQUEST_KEY] = false;
+  store.dispatch(requestStarted());
+  return config;
+};
+
+const markRequestFinished = (config) => {
+  if (!config?.[TRACKED_REQUEST_KEY] || config?.[FINISHED_REQUEST_KEY]) return;
+  config[FINISHED_REQUEST_KEY] = true;
+  store.dispatch(requestFinished());
+};
+
 HttpService.interceptors.request.use(
   (config) => {
-    store.dispatch(requestStarted());
+    markRequestStarted(config);
     const token = store.getState()?.auth?.token;
     if (token) {
       config.headers.authorization = token;
@@ -31,6 +48,17 @@ HttpService.interceptors.request.use(
   },
 );
 
+HttpService.interceptors.response.use(
+  (response) => {
+    markRequestFinished(response?.config);
+    return response;
+  },
+  (error) => {
+    markRequestFinished(error?.config);
+    return Promise.reject(error);
+  },
+);
+
 const AxiosInterceptor = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,7 +66,6 @@ const AxiosInterceptor = ({ children }) => {
   useEffect(() => {
     const interceptor = HttpService.interceptors.response.use(
       (response) => {
-        store.dispatch(requestFinished());
         if (response?.data?.tokenExpired) {
           dispatch(logout());
           store.dispatch(resetRequests());
@@ -48,7 +75,6 @@ const AxiosInterceptor = ({ children }) => {
         return response;
       },
       (error) => {
-        store.dispatch(requestFinished());
         return Promise.reject(error);
       },
     );

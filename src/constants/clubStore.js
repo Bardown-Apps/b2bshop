@@ -38,13 +38,28 @@ const DEFAULT_CLUBS = [
 ];
 
 export const getClubOptions = (clubs = []) => {
-  const dynamicClubNames = clubs
-    .map((club) => club?.clubName?.trim())
+  const dynamicClubs = clubs
+    .map((club) => {
+      const name = club?.clubName?.trim();
+      const logo =
+        club?.logo || club?.clubLogo || club?.clubLogoUrl || club?.logoUrl || "";
+
+      return name ? { name, logo } : null;
+    })
     .filter(Boolean);
 
-  const allClubs =
-    dynamicClubNames.length > 0 ? dynamicClubNames : DEFAULT_CLUBS;
-  return [...new Set(allClubs)];
+  if (dynamicClubs.length > 0) {
+    const uniqueClubs = new Map();
+    dynamicClubs.forEach((club) => {
+      if (!uniqueClubs.has(club.name)) {
+        uniqueClubs.set(club.name, club);
+      }
+    });
+
+    return Array.from(uniqueClubs.values());
+  }
+
+  return DEFAULT_CLUBS.map((name) => ({ name, logo: "" }));
 };
 
 export const getFilterOptions = (clubs = []) => ({

@@ -25,9 +25,10 @@ const ProtectedNav = () => {
   return (
     <nav ref={navRef} className="border-t border-slate-100 relative z-50">
       <div className="max-w-[1400px] mx-auto px-4 md:px-8 flex items-center gap-1 overflow-x-auto md:overflow-visible">
-        {dashboardNav.map(({ label, href, children }) => {
+        {dashboardNav.map(({ label, href, children }, index) => {
           const isActive = pathname === href;
           const hasChildren = Boolean(children);
+          const leadingItemClass = index === 0 ? "pl-0" : "";
 
           if (!hasChildren) {
             return (
@@ -38,7 +39,7 @@ const ProtectedNav = () => {
                   isActive
                     ? "text-slate-900"
                     : "text-slate-500 hover:text-slate-700"
-                }`}
+                } ${leadingItemClass}`}
               >
                 {label}
                 {isActive && (
@@ -54,20 +55,19 @@ const ProtectedNav = () => {
           );
 
           return (
-            <div
-              key={label}
-              className="relative"
-            >
+            <div key={label} className="relative">
               <button
                 type="button"
                 onClick={() =>
-                  setOpenDropdown((current) => (current === label ? null : label))
+                  setOpenDropdown((current) =>
+                    current === label ? null : label,
+                  )
                 }
                 className={`relative px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer ${
                   isDropdownActive
                     ? "text-slate-900"
                     : "text-slate-500 hover:text-slate-700"
-                }`}
+                } ${leadingItemClass}`}
               >
                 {label}
                 <ChevronDown
@@ -89,7 +89,7 @@ const ProtectedNav = () => {
                           {group}
                         </p>
                       )}
-                      {items.map(({ name, href: optionHref }) => {
+                      {items.map(({ name, href: optionHref, logo }) => {
                         const isOptionActive =
                           optionHref === `${pathname}${search}`;
 
@@ -98,12 +98,19 @@ const ProtectedNav = () => {
                             key={name}
                             to={optionHref}
                             onClick={() => setOpenDropdown(null)}
-                            className={`block px-3 py-2 text-xs font-medium transition-colors ${
+                            className={`px-3 py-2 text-xs font-medium transition-colors flex items-center gap-2 ${
                               isOptionActive
                                 ? "text-slate-900 bg-slate-100"
                                 : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                             }`}
                           >
+                            {logo && (
+                              <img
+                                src={logo}
+                                alt={name}
+                                className="w-8 h-8 object-contain"
+                              />
+                            )}
                             {name}
                           </Link>
                         );

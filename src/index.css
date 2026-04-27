@@ -165,3 +165,56 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+.size-chart-slider .slick-track {
+  display: flex !important;
+  align-items: center;
+}
+
+.size-chart-slider .slick-slide > div {
+  display: flex;
+  justify-content: center;
+}
+
+.size-chart-slider .slick-dots {
+  bottom: -2px;
+}
+
+.size-chart-slider .slick-dots li button:before {
+  color: #64748b;
+  opacity: 0.6;
+}
+
+.size-chart-slider .slick-dots li.slick-active button:before {
+  color: #0f172a;
+  opacity: 1;
+}
+
+.size-chart-slider .slick-prev,
+.size-chart-slider .slick-next {
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.size-chart-slider .slick-prev {
+  left: 8px;
+}
+
+.size-chart-slider .slick-next {
+  right: 8px;
+}
+
+.size-chart-slider .slick-prev:before,
+.size-chart-slider .slick-next:before {
+  color: #ffffff;
+  opacity: 1;
+  font-size: 18px;
+}
+
+.size-chart-slider .slick-prev:hover,
+.size-chart-slider .slick-next:hover {
+  background: rgba(15, 23, 42, 0.95);
+}

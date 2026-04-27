@@ -4,10 +4,18 @@ import { useNavigate, Outlet, useLocation, Link } from "react-router-dom";
 import { useAppDispatch } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import routes from "@/constants/routes";
-import { LogOut, Search, User, Menu, X, Store } from "lucide-react";
+import {
+  LogOut,
+  Search,
+  User,
+  Menu,
+  X,
+  Store,
+  ShoppingCart,
+} from "lucide-react";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import ProtectedNav from "./ProtectedNav";
-import DashboardSidebar from "@/components/DashboardSidebar";
+// import DashboardSidebar from "@/components/DashboardSidebar";
 import Footer from "@/components/Footer";
 
 const ProtectedLayout = () => {
@@ -17,6 +25,7 @@ const ProtectedLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const { user } = useSelector((state) => state.auth);
+  const cartCount = useSelector((state) => state?.cart?.itemsCount || 0);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -29,12 +38,15 @@ const ProtectedLayout = () => {
 
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4">
-          <div className="hidden md:flex items-center">
+          <div
+            className="hidden md:flex items-center cursor-pointer"
+            onClick={() => navigate(routes.clubStore)}
+          >
             {user?.companyLogo ? (
               <img
                 src={user?.companyLogo}
                 alt="Adrenalin Source for Sports"
-                className="h-10 w-auto rounded-md object-contain bg-slate-900 p-1"
+                className="h-14 w-auto rounded-md object-contain bg-slate-900 p-1"
                 loading="lazy"
               />
             ) : (
@@ -65,7 +77,7 @@ const ProtectedLayout = () => {
 
           <div className="flex-1 flex justify-center">
             <Link
-              to="/"
+              to={routes.clubStore}
               className="text-2xl font-bold tracking-tight text-slate-900 hover:text-red-600 transition-colors"
             >
               <img
@@ -84,6 +96,18 @@ const ProtectedLayout = () => {
                 {user?.companyName}
               </span>
             </div>
+            <button
+              type="button"
+              onClick={() => navigate(routes.cart)}
+              className="relative flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors cursor-pointer p-2 rounded-lg hover:bg-slate-100"
+              aria-label={`Cart with ${cartCount} items`}
+            >
+              <ShoppingCart className="w-5 h-5" />
+
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 inline-flex items-center justify-center rounded-full bg-red-600 text-white text-[10px] font-semibold leading-none">
+                {cartCount || "0"}
+              </span>
+            </button>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-sm text-slate-500 hover:text-red-600 transition-colors cursor-pointer px-2 py-1.5 rounded-lg hover:bg-red-50"
@@ -107,21 +131,21 @@ const ProtectedLayout = () => {
       <div className="flex-1">
         <div className="max-w-[1400px] mx-auto px-4 md:px-8 py-8 md:py-10 flex flex-col lg:flex-row gap-8">
           {/* Mobile sidebar drawer */}
-          <div
+          {/* <div
             className={`lg:hidden fixed top-0 left-0 z-30 h-full w-72 bg-slate-50 shadow-2xl pt-20 px-4 pb-6 overflow-y-auto transition-transform duration-300 ease-out ${
               sidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
           >
             <DashboardSidebar onNavigate={() => setSidebarOpen(false)} />
-          </div>
+          </div> */}
 
           {/* Desktop sidebar */}
-          <div className="hidden lg:block">
+          {/* <div className="hidden lg:block">
             <DashboardSidebar
               collapsed={collapsed}
               onToggleCollapse={() => setCollapsed(!collapsed)}
             />
-          </div>
+          </div> */}
 
           <main
             key={location.pathname}

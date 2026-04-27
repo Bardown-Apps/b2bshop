@@ -84,6 +84,10 @@ const ProductGrid = () => {
   const categories = useSelector((state) => state.categories.list);
   const products = useSelector((state) => state.products.list);
   const filterOptions = useMemo(() => getFilterOptions(clubs), [clubs]);
+  const availableClubNames = useMemo(
+    () => filterOptions.Clubs.map((club) => club.name),
+    [filterOptions.Clubs],
+  );
   const normalizedProducts = useMemo(
     () =>
       products
@@ -124,14 +128,9 @@ const ProductGrid = () => {
   const selectedTeam = searchParams.get("team")?.trim() || "";
 
   useEffect(() => {
-    if (!selectedTeam) {
-      setFilters((prev) =>
-        prev.Clubs.length > 0 ? { ...prev, Clubs: [] } : prev,
-      );
-      return;
-    }
+    if (!selectedTeam) return;
 
-    const isValidTeam = filterOptions.Clubs.includes(selectedTeam);
+    const isValidTeam = availableClubNames.includes(selectedTeam);
     if (!isValidTeam) return;
 
     setFilters((prev) => {
@@ -139,7 +138,7 @@ const ProductGrid = () => {
         prev.Clubs.length === 1 && prev.Clubs[0] === selectedTeam;
       return alreadySelected ? prev : { ...prev, Clubs: [selectedTeam] };
     });
-  }, [selectedTeam, filterOptions.Clubs]);
+  }, [selectedTeam, availableClubNames]);
 
   const filtered = normalizedProducts.filter((p) => {
     const matchCat = activeCategory === "All" || p.category === activeCategory;
@@ -258,7 +257,7 @@ const ProductGrid = () => {
       {/* Scrollable content area: filters (sticky) + product grid */}
       <div className="flex gap-6 min-h-0 flex-1">
         {/* Filters — sticky within scroll area */}
-        <div className="hidden md:block shrink-0 w-52 overflow-y-auto sticky top-0 self-start max-h-[calc(100vh-220px)]">
+        <div className="hidden md:block shrink-0 w-64 lg:w-72 overflow-y-auto sticky top-0 self-start max-h-[calc(100vh-220px)]">
           <StoreFilters
             filters={filters}
             onChange={handleFilterChange}

@@ -7,6 +7,7 @@ import LoginDialog from "@/components/LoginDialog";
 import routes from "@/constants/routes";
 import { useAppDispatch } from "@/store/hooks";
 import { login } from "@/store/slices/authSlice";
+import { set as setShop } from "@/store/slices/shopSlice";
 
 const PublicLayout = () => {
   const dispatch = useAppDispatch();
@@ -17,7 +18,9 @@ const PublicLayout = () => {
   const closeLogin = () => setLoginOpen(false);
 
   const handleLoginSuccess = (data) => {
-    dispatch(login(data));
+    const { shopData, ...authData } = data || {};
+    dispatch(login(authData));
+    dispatch(setShop(shopData || {}));
     closeLogin();
     navigate(routes.clubStore, { replace: true });
   };
