@@ -208,7 +208,7 @@ const ProductGrid = () => {
     (filters.priceMax ? 1 : 0);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)]">
+    <div className="flex flex-col">
       {/* Fixed header: title + tabs + search */}
       <div className="shrink-0 pb-4">
         <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-5">
@@ -255,9 +255,9 @@ const ProductGrid = () => {
       </div>
 
       {/* Scrollable content area: filters (sticky) + product grid */}
-      <div className="flex gap-6 min-h-0 flex-1">
-        {/* Filters — sticky within scroll area */}
-        <div className="hidden md:block shrink-0 w-64 lg:w-72 overflow-y-auto sticky top-0 self-start max-h-[calc(100vh-220px)]">
+      <div className="flex gap-6">
+        {/* Filters */}
+        <div className="hidden md:block shrink-0 w-64 lg:w-72">
           <StoreFilters
             filters={filters}
             onChange={handleFilterChange}
@@ -267,7 +267,7 @@ const ProductGrid = () => {
         </div>
 
         {/* Scrollable product grid */}
-        <div className="flex-1 min-w-0 overflow-y-auto pr-1">
+        <div className="flex-1 min-w-0 pr-1">
           <p className="text-xs text-slate-500 mb-4">
             {filtered.length} {filtered.length === 1 ? "product" : "products"}{" "}
             found
