@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { ACTIONS, ACTION_DESCRIPTIONS } from "@/constants/clubStore";
 
-const ActionButtons = () => {
+const ActionButtons = ({ onNewOrderClick }) => {
   const [active, setActive] = useState(null);
   const toggle = (label) => setActive(active === label ? null : label);
+  const handleActionClick = (label) => {
+    toggle(label);
+
+    if (label === "New Order") {
+      onNewOrderClick?.();
+    }
+  };
 
   return (
     <div>
@@ -11,7 +18,7 @@ const ActionButtons = () => {
         {ACTIONS.slice(0, 4).map(({ label, icon: Icon }) => (
           <button
             key={label}
-            onClick={() => toggle(label)}
+            onClick={() => handleActionClick(label)}
             className={`flex flex-col items-center justify-center gap-3 p-5 sm:p-6 rounded-lg font-bold text-sm uppercase tracking-wide transition-all cursor-pointer ${
               active === label
                 ? "bg-red-600 text-white"
@@ -27,7 +34,7 @@ const ActionButtons = () => {
         {ACTIONS.slice(4).map(({ label, icon: Icon }) => (
           <button
             key={label}
-            onClick={() => toggle(label)}
+            onClick={() => handleActionClick(label)}
             className={`flex flex-col items-center justify-center gap-3 p-5 sm:p-6 rounded-lg font-bold text-xs sm:text-sm uppercase tracking-wide transition-all cursor-pointer ${
               active === label
                 ? "bg-red-600 text-white"

@@ -42,7 +42,11 @@ export const getClubOptions = (clubs = []) => {
     .map((club) => {
       const name = club?.clubName?.trim();
       const logo =
-        club?.logo || club?.clubLogo || club?.clubLogoUrl || club?.logoUrl || "";
+        club?.logo ||
+        club?.clubLogo ||
+        club?.clubLogoUrl ||
+        club?.logoUrl ||
+        "";
 
       return name ? { name, logo } : null;
     })
