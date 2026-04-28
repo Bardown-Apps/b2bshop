@@ -138,7 +138,7 @@ const CardInformation = ({
                 <div
                   className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2"
                   style={{
-                    borderColor: shop?.buttonBgColor,
+                    borderColor: "#000000",
                   }}
                 ></div>
               </div>
@@ -490,19 +490,19 @@ const CardInformation = ({
         )}
 
       {!shop?.customPayment?.value && Number(total) > 0 && (
-          <div className="border-t border-gray-200 pt-5">
-            <Button
-              type="submit"
-              disabled={!valid}
-              className="w-full"
-              isLoading={loading}
-            >
-              Pay&nbsp;
-              {`$${total.toFixed(2)}`}
-              &nbsp;{shop?.shopCurrency}
-            </Button>
-          </div>
-        )}
+        <div className="border-t border-gray-200 pt-5">
+          <Button
+            type="submit"
+            disabled={!valid}
+            className="w-full"
+            isLoading={loading}
+          >
+            Pay&nbsp;
+            {`$${total.toFixed(2)}`}
+            &nbsp;{shop?.shopCurrency}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

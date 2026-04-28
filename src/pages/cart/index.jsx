@@ -27,9 +27,7 @@ const Cart = () => {
     watch,
     updateCart,
   } = useCart();
-  const { buttonTextColor, buttonBgColor, shopCurrency } = useSelector(
-    (s) => s?.shop,
-  );
+  const { shopCurrency } = useSelector((s) => s?.shop);
   const products = watch("products");
 
   const [summarySheetOpen, setSummarySheetOpen] = useState(false);
@@ -314,9 +312,7 @@ const Cart = () => {
                                     href={d?.customDecorationUrl}
                                     target="_blank"
                                     rel="noreferrer"
-                                    style={{
-                                      color: buttonTextColor,
-                                    }}
+                                    style={{ color: "#111827" }}
                                   >
                                     (Art)
                                   </a>
@@ -476,7 +472,7 @@ const Cart = () => {
               disabled={!fields?.length || !isValid}
               className="w-full rounded-md border border-transparent  px-4 py-3 text-base font-medium text-white shadow-sm  focus:outline-none focus:ring-2  focus:ring-offset-2 "
               style={{
-                backgroundColor: buttonBgColor,
+                backgroundColor: "#000000",
               }}
             >
               Checkout

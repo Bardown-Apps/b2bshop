@@ -196,7 +196,7 @@ export function FormSection({
               onClick={handleAddTeam}
               className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white shadow-sm"
               style={{
-                backgroundColor: "#4f46e5",
+                backgroundColor: "#000000",
                 color: "#ffffff",
               }}
             >
@@ -235,7 +235,7 @@ export function FormSection({
             onClick={handleAddTeam}
             className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white shadow-sm"
             style={{
-              backgroundColor: "#4f46e5",
+              backgroundColor: "#000000",
               color: "#ffffff",
             }}
           >
@@ -264,8 +264,8 @@ export function FormSection({
               style={
                 activeTeamIndex === idx
                   ? {
-                      borderColor: "#4f46e5",
-                      color: "#4f46e5",
+                      borderColor: "#000000",
+                      color: "#000000",
                     }
                   : {}
               }

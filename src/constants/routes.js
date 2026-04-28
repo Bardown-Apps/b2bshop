@@ -25,6 +25,8 @@ const routes = {
   security: "/security",
   comingSoon: "/coming-soon",
   graphicRequest: "/graphic-request",
+  graphicsRequestNew: "/graphic-request/new",
+  graphicsRequestEdit: "/graphic-request/:id",
   faq: "/faq",
   announcements: "/announcements",
   orderForm: "/order-form",
@@ -42,5 +44,10 @@ export const Product = { path: routes.product };
 export const ContactUs = { path: routes.contactUs };
 export const Cart = { path: routes.cart };
 export const Summary = { path: routes.summary };
+export const GraphicsRequest = { path: routes.graphicRequest };
+export const GraphicsJob = {
+  new: () => routes.graphicsRequestNew,
+  edit: (id = ":id") => `/graphic-request/${id}`,
+};
 
 export default routes;

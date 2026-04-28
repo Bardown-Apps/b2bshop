@@ -19,3 +19,6 @@ export const PAYPAL_CREATE_ORDER = "/users/createPaypalOrder";
 export const PAYPAL_CAPTURE_ORDER = "/users/capturePaypalOrder";
 export const PO_ORDER_SUBMIT = "/users/b2bPoOrderSubmit";
 export const ORDER = "/users/b2bOrders";
+export const GRAPHICS_JOBS = "/users/b2bGraphicsJobs";
+export const GRAPHICS_ACTIVITIES = "/users/b2bGraphicsActivities";
+export const GRAPHICS_COMMENTS = "/users/b2bGraphicsComments";

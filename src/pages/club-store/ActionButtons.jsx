@@ -17,6 +17,10 @@ const ActionButtons = ({ onNewOrderClick }) => {
     if (label === "WIP" || label === "Historical") {
       navigate(routes.orders);
     }
+
+    if (label === "Graphics Requests") {
+      navigate(routes.graphicRequest);
+    }
   };
 
   return (

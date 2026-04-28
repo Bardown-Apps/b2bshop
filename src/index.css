@@ -11,6 +11,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Ensure interactive controls consistently show clickable cursor */
+button,
+[role="button"],
+a[href],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+label[for],
+select,
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+input[type="button"]:disabled,
+input[type="submit"]:disabled,
+input[type="reset"]:disabled,
+select:disabled {
+  cursor: not-allowed;
+}
+
 /* ── Scroll-triggered entrance animations ── */
 
 @keyframes fadeUp {

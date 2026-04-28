@@ -42,7 +42,6 @@ const OrderSummary = ({
   const shop = useSelector((s) => s.shop);
 
   const { fields, remove } = useFieldArray({ control, name: "products" });
-  // const { buttonTextColor } = useSelector((s) => s?.shop);
   const shippingTaxValuePercentage = watch("shippingTaxValuePercentage");
   const shippingTaxValue = watch("shippingTaxValue");
   const couponCode = watch("couponCode") || "";
@@ -58,8 +57,8 @@ const OrderSummary = ({
     return Array.isArray(rule?.prodIds)
       ? rule.prodIds
       : rule?.prodId
-      ? [rule.prodId]
-      : [];
+        ? [rule.prodId]
+        : [];
   };
 
   const getRuleProductNames = (rule) => {
@@ -87,7 +86,7 @@ const OrderSummary = ({
       .filter(
         (item) =>
           qualifyingIds.includes(item?.prodId) &&
-          (productQuantitiesById?.[item?.prodId] || 0) >= minQty
+          (productQuantitiesById?.[item?.prodId] || 0) >= minQty,
       )
       .map((item) => ({ name: item?.name, prodId: item?.prodId }))
       .filter(Boolean);
@@ -160,7 +159,7 @@ const OrderSummary = ({
         weight = Number(product?.orderedCombination?.weight) || 0;
       } else if (product?.variantsCombinations?.length > 0) {
         const variant = product?.variantsCombinations?.find(
-          (v) => v?.name === product?.orderedCombination?.name
+          (v) => v?.name === product?.orderedCombination?.name,
         );
         weight = Number(variant?.weight) || 0;
       }
@@ -233,7 +232,7 @@ const OrderSummary = ({
   const isDiscountApplied = (rule) => {
     if (rule?.discountBased === "product") {
       return (appliedProductDiscountRules || []).some(
-        (r) => r?._id === rule?._id
+        (r) => r?._id === rule?._id,
       );
     }
     return appliedDiscountRule?._id === rule?._id;
@@ -262,7 +261,7 @@ const OrderSummary = ({
         if (subtotal < keyword) {
           const needed = (keyword - subtotal).toFixed(2);
           return `You need $${needed} more to qualify (Current: $${subtotal.toFixed(
-            2
+            2,
           )}, Required: $${keyword}+)`;
         }
         return null;
@@ -273,7 +272,7 @@ const OrderSummary = ({
           return `You need ${needed} more pound${
             parseFloat(needed) > 1 ? "s" : ""
           } to qualify (Current: ${totalWeight.toFixed(
-            2
+            2,
           )} lbs, Required: ${keyword}+ lbs)`;
         }
         return null;
@@ -295,7 +294,7 @@ const OrderSummary = ({
             : "qualifying product(s)";
 
         const hasAnyQualifying = qualifyingProdIds.some(
-          (id) => (productQuantitiesById?.[id] || 0) >= minQty
+          (id) => (productQuantitiesById?.[id] || 0) >= minQty,
         );
         if (hasAnyQualifying) return null;
 
@@ -375,7 +374,7 @@ const OrderSummary = ({
         Number(oc?.subTotal || 0) + Number(oc?.taxValue || 0);
 
       const decorations = product?.decorations?.filter(
-        (d) => !!d?.customDecorationUrl
+        (d) => !!d?.customDecorationUrl,
       );
       const totalSetupCost =
         decorations?.reduce((acc, d) => acc + Number(d?.setUpCost), 0) || 0;
@@ -396,7 +395,7 @@ const OrderSummary = ({
       if (rule?.discountPercentage) {
         const discountPercentage = Number(rule.discountPercentage) || 0;
         return Number(
-          ((qualifyingSubtotal * discountPercentage) / 100).toFixed(2)
+          ((qualifyingSubtotal * discountPercentage) / 100).toFixed(2),
         );
       }
       if (rule?.discountValue) {
@@ -447,8 +446,8 @@ const OrderSummary = ({
           onClick={() => setIsOrderPreviewOpen(true)}
           className="inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm hover:opacity-90"
           style={{
-            backgroundColor: shop?.buttonBgColor,
-            color: shop?.buttonTextColor,
+            backgroundColor: "#000000",
+            color: "#ffffff",
           }}
         >
           Order preview
@@ -461,8 +460,8 @@ const OrderSummary = ({
         orderPreviewSearch={orderPreviewSearch}
         setOrderPreviewSearch={setOrderPreviewSearch}
         fields={fields}
-        accentBgColor={shop?.buttonBgColor}
-        accentTextColor={shop?.buttonTextColor}
+        accentBgColor="#000000"
+        accentTextColor="#ffffff"
       />
 
       {creditAmount ? (
@@ -479,7 +478,7 @@ const OrderSummary = ({
               <InformationCircleIcon
                 aria-hidden="true"
                 className="size-5"
-                style={{ color: shop?.buttonTextColor }}
+                style={{ color: "#111827" }}
               />
             </div>
             <div className="flex-1">
@@ -492,7 +491,7 @@ const OrderSummary = ({
                   className="inline-flex items-center rounded-full px-2.5 py-0.5 text-sm font-semibold shadow-sm"
                   style={{
                     background:
-                      "linear-gradient(90deg, #4f46e5 0%, #ec4899 50%, #14b8a6 100%)",
+                      "linear-gradient(90deg, #000000 0%, #ec4899 50%, #14b8a6 100%)",
                     color: "#fff",
                   }}
                 >
@@ -527,7 +526,7 @@ const OrderSummary = ({
             const orderFormTeams = product?.orderForm?.teams || [];
             const orderFormCombinationsCount = orderFormTeams.reduce(
               (acc, team) => acc + (team?.orderCombinations?.length || 0),
-              0
+              0,
             );
 
             const getOrderFormSubTotal = () => {
@@ -544,7 +543,7 @@ const OrderSummary = ({
             const orderFormSubTotal = getOrderFormSubTotal();
             const orderFormTaxValue = Number(product?.orderForm?.taxValue || 0);
             const orderFormTaxPercentage = Number(
-              product?.orderForm?.taxValuePercentage || 0
+              product?.orderForm?.taxValuePercentage || 0,
             );
             const orderFormLineTotal = orderFormSubTotal + orderFormTaxValue;
 
@@ -615,7 +614,7 @@ const OrderSummary = ({
                                       </p>
                                     )}
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -653,7 +652,6 @@ const OrderSummary = ({
                                   <a
                                     className="underline text-[#000]"
                                     // style={{
-                                    //   color: buttonTextColor,
                                     // }}
                                     href={d?.customDecorationUrl}
                                     target="_blank"
@@ -714,7 +712,7 @@ const OrderSummary = ({
                             {f.fieldName} : {f.value}
                           </p>
                         </div>
-                      )
+                      ),
                   )}
 
                   <div className="flex flex-1 items-end justify-between mt-2">
@@ -812,7 +810,7 @@ const OrderSummary = ({
                             (product.orderedCombination.subTotal || 0) +
                               (product?.orderedCombination?.taxValue || 0) +
                               totalSetupCost +
-                              setUpCostTax
+                              setUpCostTax,
                           ).toFixed(2)}
                     </p>
                   </div>
@@ -864,8 +862,8 @@ const OrderSummary = ({
                               <div
                                 className="inline-flex items-center gap-2 rounded-md bg-blue-100 px-3 py-1 text-xs font-semibold"
                                 style={{
-                                  backgroundColor: shop?.buttonBgColor,
-                                  color: shop?.buttonTextColor,
+                                  backgroundColor: "#000000",
+                                  color: "#ffffff",
                                 }}
                               >
                                 <svg
@@ -892,8 +890,8 @@ const OrderSummary = ({
                               <span
                                 className="inline-flex items-center rounded-full px-3 py-1 text-xs font-bold"
                                 style={{
-                                  color: shop?.buttonTextColor,
-                                  backgroundColor: shop?.buttonBgColor,
+                                  color: "#ffffff",
+                                  backgroundColor: "#000000",
                                 }}
                               >
                                 {rule?.discountPercentage}% OFF

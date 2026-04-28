@@ -24,7 +24,7 @@ export function TeamOrderTable({
   sizeOptions = [],
   hideRowActions = false,
 }) {
-  const fallbackColor = "#4f46e5";
+  const fallbackColor = "#000000";
   const textColor = "#ffffff";
 
   return (

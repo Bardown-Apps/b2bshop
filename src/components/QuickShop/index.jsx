@@ -103,8 +103,8 @@ const Wrapper = ({ product, setProduct }) => {
                         )}
                         style={{
                           color: tab === index ? "#ffffff" : "#334155",
-                          borderColor: tab === index ? "#4f46e5" : "#cbd5e1",
-                          background: tab === index ? "#4f46e5" : "#ffffff",
+                          borderColor: tab === index ? "#000000" : "#cbd5e1",
+                          background: tab === index ? "#000000" : "#ffffff",
                         }}
                       >
                         {t.name}
@@ -123,7 +123,7 @@ const Wrapper = ({ product, setProduct }) => {
                         onClick={() => setTeamOrderFormOpen(true)}
                         className="rounded-md px-3 py-2 text-sm font-medium shadow-sm transition-all duration-200 hover:-translate-y-0.5"
                         style={{
-                          backgroundColor: "#4f46e5",
+                          backgroundColor: "#000000",
                           color: "#ffffff",
                         }}
                       >

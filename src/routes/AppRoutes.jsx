@@ -24,7 +24,8 @@ import SavedCards from "@/pages/saved-cards";
 import ShippingAddresses from "@/pages/shipping-addresses";
 import Security from "@/pages/security";
 import ComingSoonPage from "@/pages/coming-soon";
-import GraphicRequest from "@/pages/graphic-request";
+import GraphicsRequests from "@/pages/graphics-requests";
+import GraphicsJobForm from "@/pages/graphics-requests/JobForm";
 import FAQ from "@/pages/faq";
 import Announcements from "@/pages/announcements";
 import OrderForm from "@/pages/order-form";
@@ -83,7 +84,15 @@ const AppRoutes = () => (
         />
         <Route path={routes.security} element={<Security />} />
         <Route path={routes.comingSoon} element={<ComingSoonPage />} />
-        <Route path={routes.graphicRequest} element={<GraphicRequest />} />
+        <Route path={routes.graphicRequest} element={<GraphicsRequests />} />
+        <Route
+          path={routes.graphicsRequestNew}
+          element={<GraphicsJobForm mode="add" />}
+        />
+        <Route
+          path={routes.graphicsRequestEdit}
+          element={<GraphicsJobForm mode="edit" />}
+        />
         <Route path={routes.faq} element={<FAQ />} />
         <Route path={routes.announcements} element={<Announcements />} />
         <Route path={routes.orderForm} element={<OrderForm />} />

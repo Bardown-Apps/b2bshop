@@ -74,7 +74,7 @@ function createTeamsFromConfig(teamsConfig) {
 
 /** Step 1: Club cards with logo */
 function Step1Clubs({ clubs, selectedClub, onSelect }) {
-  const themeBg = "#4f46e5";
+  const themeBg = "#000000";
   const themeLight = hexToRgba(themeBg, 0.12);
   if (!clubs?.length) {
     return <p className="text-gray-500">No clubs available for this shop.</p>;
@@ -229,7 +229,7 @@ function Step2Teams({ teamsConfig, onAddTeam, onDeleteTeam, onUpdateTeam }) {
         onClick={onAddTeam}
         className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-opacity"
         style={{
-          backgroundColor: "#4f46e5",
+          backgroundColor: "#000000",
           color: "#fff",
         }}
       >
@@ -247,7 +247,7 @@ function Step5Products({
   selectedProductIds,
   onToggleProduct,
 }) {
-  const themeBg = "#4f46e5";
+  const themeBg = "#000000";
   const themeLight = hexToRgba(themeBg, 0.12);
   if (!club)
     return <p className="text-gray-500">Select a club in Step 1 first.</p>;
@@ -984,7 +984,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
           transition
           className="fixed inset-0 flex flex-col overflow-hidden bg-white shadow-2xl data-[closed]:opacity-0 data-[closed]:scale-95 data-[enter]:duration-200 data-[leave]:duration-150"
           style={{
-            ["--theme-primary"]: "#4f46e5",
+            ["--theme-primary"]: "#000000",
             ["--theme-primary-text"]: "#fff",
           }}
         >
@@ -1022,7 +1022,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
                 }
                 className="rounded-md px-5 py-2.5 text-base font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)] focus:ring-offset-2 disabled:opacity-70 disabled:pointer-events-none"
                 style={{
-                  backgroundColor: "#4f46e5",
+                  backgroundColor: "#000000",
                   color: "#fff",
                 }}
               >
@@ -1046,7 +1046,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
               {STEPS.map((label, index) => {
                 const complete = index < currentStep;
                 const current = index === currentStep;
-                const themeBg = "#4f46e5";
+                const themeBg = "#000000";
                 const themeText = "#fff";
                 return (
                   <div key={label} className="flex shrink-0 items-center">
@@ -1186,7 +1186,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
                   disabled={!canNext()}
                   className="inline-flex items-center gap-2 rounded-md px-5 py-2.5 text-base font-medium shadow-sm disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)] focus:ring-offset-2"
                   style={{
-                    backgroundColor: "#4f46e5",
+                    backgroundColor: "#000000",
                     color: "#fff",
                   }}
                 >

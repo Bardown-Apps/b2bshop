@@ -18,9 +18,7 @@ const ShippingInformation = ({
 
   const selectedShippingWay = watch("selectedShippingWay");
 
-  const { shippingWays, shipStationConnection, buttonBgColor } = useSelector(
-    (s) => s?.shop,
-  );
+  const { shippingWays, shipStationConnection } = useSelector((s) => s?.shop);
 
   const isMultipleAddressSelected = !!shippingWays?.find((s) =>
     s?.name?.includes("Multiple Address"),
@@ -155,7 +153,7 @@ const ShippingInformation = ({
                 }}
                 className="col-start-1 row-start-1 h-4 w-4 cursor-pointer accent-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
-                  borderColor: buttonBgColor,
+                  borderColor: "#000000",
                 }}
               />
             </div>
@@ -180,7 +178,7 @@ const ShippingInformation = ({
                 type="checkbox"
                 className="col-start-1 row-start-1 h-4 w-4 cursor-pointer accent-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
-                  borderColor: buttonBgColor,
+                  borderColor: "#000000",
                 }}
                 checked={selectedShippingWay === pickUp?.name}
                 onChange={() => {
@@ -231,7 +229,7 @@ const ShippingInformation = ({
                         name="pickup-location"
                         className="col-start-1 row-start-1 h-4 w-4 cursor-pointer accent-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2"
                         style={{
-                          borderColor: buttonBgColor,
+                          borderColor: "#000000",
                         }}
                         checked={isThisLocationSelected}
                         onChange={() => {
@@ -279,7 +277,7 @@ const ShippingInformation = ({
                 type="checkbox"
                 className="col-start-1 row-start-1 h-4 w-4 cursor-pointer accent-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2"
                 style={{
-                  borderColor: buttonBgColor,
+                  borderColor: "#000000",
                 }}
                 checked={selectedShippingWay === "ShipToMyAddress"}
                 onChange={() => {
@@ -449,7 +447,7 @@ const ShippingInformation = ({
           <div
             className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2"
             style={{
-              borderColor: buttonBgColor,
+              borderColor: "#000000",
             }}
           ></div>
         </div>
