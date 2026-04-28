@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ACTIONS, ACTION_DESCRIPTIONS } from "@/constants/clubStore";
+import routes from "@/constants/routes";
 
 const ActionButtons = ({ onNewOrderClick }) => {
+  const navigate = useNavigate();
   const [active, setActive] = useState(null);
   const toggle = (label) => setActive(active === label ? null : label);
   const handleActionClick = (label) => {
@@ -9,6 +12,10 @@ const ActionButtons = ({ onNewOrderClick }) => {
 
     if (label === "New Order") {
       onNewOrderClick?.();
+    }
+
+    if (label === "WIP" || label === "Historical") {
+      navigate(routes.orders);
     }
   };
 
