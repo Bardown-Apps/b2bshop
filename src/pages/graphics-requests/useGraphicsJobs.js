@@ -7,6 +7,13 @@ import {
   GRAPHICS_COMMENTS,
 } from "@/constants/services";
 
+function isUnauthorizedResponse(result) {
+  return (
+    result?.success === false &&
+    String(result?.message || "").toLowerCase() === "unauthorized"
+  );
+}
+
 function normalizeJob(it) {
   const id = it?.id ?? it?._id ?? it?.jobId;
   let assignedArr = [];
@@ -51,7 +58,7 @@ export default function useGraphicsJobs() {
   const { mutateAsync } = usePost();
 
   const fetchJobs = useCallback(
-    async (onError, pagination = {}, email = "") => {
+    async (onError, pagination = {}, email = "", onUnauthorized) => {
       const { take = 10, skip = 0 } = pagination;
       try {
         const result = await mutateAsync({
@@ -59,8 +66,16 @@ export default function useGraphicsJobs() {
           data: { take, skip, email },
         });
 
+        if (isUnauthorizedResponse(result?.data)) {
+          onUnauthorized?.();
+          return [];
+        }
         if (result?.error) {
           onError?.(result.error);
+          return [];
+        }
+        if (result?.success === false && result?.message) {
+          onError?.(result.message);
           return [];
         }
         const list = Array.isArray(result?.data)
@@ -87,14 +102,22 @@ export default function useGraphicsJobs() {
   }, []);
 
   const fetchActivities = useCallback(
-    async (id, email, onError) => {
+    async (id, email, onError, onUnauthorized) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_ACTIVITIES,
           data: { id, email },
         });
+        if (isUnauthorizedResponse(result?.data)) {
+          onUnauthorized?.();
+          return [];
+        }
         if (result?.error) {
           onError?.(result.error);
+          return [];
+        }
+        if (result?.success === false && result?.message) {
+          onError?.(result.message);
           return [];
         }
         return result?.data ?? [];
@@ -107,14 +130,22 @@ export default function useGraphicsJobs() {
   );
 
   const fetchComments = useCallback(
-    async (id, email, onError) => {
+    async (id, email, onError, onUnauthorized) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_COMMENTS,
           data: { id, email },
         });
+        if (isUnauthorizedResponse(result?.data)) {
+          onUnauthorized?.();
+          return [];
+        }
         if (result?.error) {
           onError?.(result.error);
+          return [];
+        }
+        if (result?.success === false && result?.message) {
+          onError?.(result.message);
           return [];
         }
         return result?.data ?? [];
@@ -127,15 +158,23 @@ export default function useGraphicsJobs() {
   );
 
   const submitComment = useCallback(
-    async (jId, email, createdBy, message, onError) => {
+    async (jId, email, createdBy, message, onError, onUnauthorized) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_COMMENTS,
           data: { id: jId, email, createdBy, message },
           isPut: true,
         });
+        if (isUnauthorizedResponse(result?.data)) {
+          onUnauthorized?.();
+          return null;
+        }
         if (result?.error) {
           onError?.(result.error);
+          return null;
+        }
+        if (result?.success === false && result?.message) {
+          onError?.(result.message);
           return null;
         }
         return result?.data ?? [];

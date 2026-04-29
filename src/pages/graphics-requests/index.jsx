@@ -21,8 +21,9 @@ import {
   ActivitiesDrawer,
   CommentsDrawer,
 } from "./components";
-import { GraphicsJob } from "@/constants/routes";
+import routes, { GraphicsJob } from "@/constants/routes";
 import Button from "@/components/Button";
+import Dialog from "@/components/Dialog";
 
 function getJobStatus(s) {
   const val = Array.isArray(s) ? s[s.length - 1] : s;
@@ -70,7 +71,12 @@ export default function GraphicsJobsList() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [accessDialogOpen, setAccessDialogOpen] = useState(false);
   const hasFetchedJobs = useRef(false);
+
+  const handleUnauthorizedAccess = () => {
+    setAccessDialogOpen(true);
+  };
 
   const userProfile = useMemo(() => {
     return {
@@ -87,6 +93,7 @@ export default function GraphicsJobsList() {
       (msg) => setBanner({ kind: "error", message: msg }),
       undefined,
       user?.email ?? "",
+      handleUnauthorizedAccess,
     ).then(setJobs);
   }, [fetchJobs, user?.email]);
 
@@ -119,15 +126,21 @@ export default function GraphicsJobsList() {
   }, [jobs, search, statusFilter]);
 
   const handleFetchActivities = async (id) => {
-    const data = await fetchActivitiesApi(id, user?.email, (msg) =>
-      setBanner({ kind: "error", message: msg }),
+    const data = await fetchActivitiesApi(
+      id,
+      user?.email,
+      (msg) => setBanner({ kind: "error", message: msg }),
+      handleUnauthorizedAccess,
     );
     setActivity(data || []);
   };
 
   const handleFetchComments = async (id) => {
-    const data = await fetchCommentsApi(id, user?.email, (msg) =>
-      setBanner({ kind: "error", message: msg }),
+    const data = await fetchCommentsApi(
+      id,
+      user?.email,
+      (msg) => setBanner({ kind: "error", message: msg }),
+      handleUnauthorizedAccess,
     );
     setComments(data || []);
   };
@@ -135,7 +148,14 @@ export default function GraphicsJobsList() {
   const handleSubmitComment = async () => {
     const jobId = selectedJob?.id;
     if (!jobId) return;
-    const data = await submitCommentApi(jobId, user?.email, user, commentMsg);
+    const data = await submitCommentApi(
+      jobId,
+      user?.email,
+      user,
+      commentMsg,
+      undefined,
+      handleUnauthorizedAccess,
+    );
     if (data) {
       setCommentMsg("");
       setComments(data);
@@ -404,6 +424,23 @@ export default function GraphicsJobsList() {
           </button>
         </div>
       </Modal>
+
+      <Dialog
+        open={accessDialogOpen}
+        title="Graphics Requests Access"
+        onClose={() => {
+          setAccessDialogOpen(false);
+          navigate(routes.clubStore);
+        }}
+      >
+        <p className="text-sm text-gray-700">
+          Contact Bardown team to give you the access of Graphics Jobs Board on
+          your following email address.
+        </p>
+        <p className="mt-2 text-sm font-medium text-gray-900">
+          {user?.email || "No email found"}
+        </p>
+      </Dialog>
 
       <ActivitiesDrawer
         open={leftDrawer}
