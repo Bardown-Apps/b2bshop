@@ -1,5 +1,9 @@
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { XMarkIcon, ChatBubbleLeftIcon } from "@heroicons/react/24/outline";
+import {
+  XMarkIcon,
+  ChatBubbleLeftIcon,
+  PaperClipIcon,
+} from "@heroicons/react/24/outline";
 import { cx, formatTs, initialsOf } from "../utils";
 
 const FALLBACK_COLOR = "#000000";
@@ -22,7 +26,7 @@ export function CommentsDrawer({
   const hasComments = sortedComments.length > 0;
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-10">
+    <Dialog open={open} onClose={onClose} className="relative z-9999">
       <div className="fixed inset-0 bg-gray-900/20" aria-hidden="true" />
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">
@@ -64,7 +68,7 @@ export function CommentsDrawer({
                   <p className="mt-2 text-xs text-gray-500">
                     Created by{" "}
                     <span className="font-medium text-gray-700">
-                      {job.createdBy.name}
+                      {job.createdBy.companyName}
                     </span>{" "}
                     <span className="text-gray-400">{job.createdBy.email}</span>
                   </p>
@@ -87,11 +91,17 @@ export function CommentsDrawer({
                   <ul role="list" className="space-y-4">
                     {sortedComments.map((item, idx, arr) => {
                       const person = item.person || {};
-                      const avatar = person.img;
-                      const name = person.name || "Unknown";
+                      const avatar = person.img || person.companyLogo;
+                      const name =
+                        person?.name || person.companyName || "Unknown";
                       const role = person.role || "Unknown";
                       const msg = item.message ?? "Updated";
                       const isUpdate = msg?.toLowerCase().includes("updated");
+                      const attachments = Array.isArray(item?.files)
+                        ? item.files
+                        : item?.files
+                          ? [item.files]
+                          : [];
 
                       return (
                         <li key={item._id || idx} className="flex gap-3">
@@ -100,7 +110,7 @@ export function CommentsDrawer({
                               <img
                                 alt=""
                                 src={avatar}
-                                className="size-8 rounded-full object-cover ring-2 ring-white shadow-sm"
+                                className="size-8 rounded-full object-cover ring-2 ring-white shadow-sm bg-slate-700"
                               />
                             ) : (
                               <div
@@ -142,6 +152,31 @@ export function CommentsDrawer({
                                 >
                                   {msg}
                                 </p>
+                              )}
+                              {attachments.length > 0 && (
+                                <div className="mt-2 space-y-1.5">
+                                  {attachments.map((file, fileIdx) => {
+                                    const fileUrl = file?.url || file?.thumbnail;
+                                    if (!fileUrl) return null;
+                                    const fileName =
+                                      file?.original_filename ||
+                                      file?.public_id?.split("/")?.pop() ||
+                                      `Attachment ${fileIdx + 1}`;
+                                    return (
+                                      <a
+                                        key={file?.public_id || fileUrl || fileIdx}
+                                        href={fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex max-w-full items-center gap-1.5 rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs text-gray-700 transition hover:bg-gray-100 hover:text-gray-900"
+                                        title={fileName}
+                                      >
+                                        <PaperClipIcon className="size-3.5 shrink-0" />
+                                        <span className="truncate">{fileName}</span>
+                                      </a>
+                                    );
+                                  })}
+                                </div>
                               )}
                             </div>
                           </div>

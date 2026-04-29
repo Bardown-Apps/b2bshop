@@ -21,7 +21,7 @@ import {
   EyeIcon,
 } from "@heroicons/react/24/outline";
 import { CheckIcon } from "@heroicons/react/20/solid";
-import { Card, Banner } from "./components";
+import { Card, Banner, AssetPreviewDialog } from "./components";
 import openCloudinaryWidget from "@/utils/cloudinary";
 
 // ---- constants
@@ -205,32 +205,6 @@ function TextAreaField({
       {error ? <p className="mt-1 text-xs text-rose-600">{error}</p> : null}
     </div>
   );
-}
-
-function loadCloudinaryWidget() {
-  return new Promise((resolve, reject) => {
-    if (window.cloudinary?.createUploadWidget) return resolve();
-    const id = "cloudinary-widget";
-    if (document.getElementById(id)) {
-      // already appended but not ready yet
-      const check = setInterval(() => {
-        if (window.cloudinary?.createUploadWidget) {
-          clearInterval(check);
-          resolve();
-        }
-      }, 50);
-      return;
-    }
-    const s = document.createElement("script");
-    s.id = id;
-    s.src = "https://widget.cloudinary.com/v2.0/global/all.js";
-    s.onload = () =>
-      window.cloudinary?.createUploadWidget
-        ? resolve()
-        : reject(new Error("Widget failed to load"));
-    s.onerror = () => reject(new Error("Unable to load Cloudinary widget"));
-    document.body.appendChild(s);
-  });
 }
 
 function toAssetObj(info) {
@@ -735,18 +709,10 @@ export default function GraphicsJobForm({ mode: modeProp }) {
   const navigate = useNavigate();
   const params = useParams();
   const { mutateAsync } = usePost();
-  const UI_ONLY_MODE = true;
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.auth?.user);
 
   const mode = modeProp ?? (params?.id && params.id !== "new" ? "edit" : "add");
   const isEdit = mode === "edit";
-  const userProfile = useMemo(() => {
-    return {
-      name: user?.name,
-      email: user?.email,
-      role: user?.role,
-    };
-  }, [user]);
 
   // Shop color defaults
   const shopColor = "#111827";
@@ -758,23 +724,6 @@ export default function GraphicsJobForm({ mode: modeProp }) {
   // ---- Preview dialog state ----
   const [preview, setPreview] = useState(null);
   // preview = { url, name, isImage }
-  useEffect(() => {
-    if (!preview) return;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [preview]);
-
-  useEffect(() => {
-    if (!preview) return;
-    function onKey(e) {
-      if (e.key === "Escape") setPreview(null);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [preview]);
 
   function openPreview(asset) {
     if (!asset?.url) return;
@@ -844,21 +793,12 @@ export default function GraphicsJobForm({ mode: modeProp }) {
   const [oldJobData, setOldJobData] = useState({});
   const [loading, setLoading] = useState(isEdit); // load when editing
 
-  async function fetchJob(id) {
-    if (UI_ONLY_MODE) {
-      setBanner({
-        kind: "warn",
-        message: "API not available in UI mode. Showing empty form.",
-      });
-      setLoading(false);
-      return;
-    }
-
+  async function fetchJob(id, email) {
     setLoading(true);
     try {
       const result = await mutateAsync({
         url: GRAPHICS_JOBS,
-        data: { id },
+        data: { id, email },
       });
       if (result?.error) {
         setBanner({
@@ -925,9 +865,9 @@ export default function GraphicsJobForm({ mode: modeProp }) {
   }
 
   useEffect(() => {
-    if (isEdit && params?.id) fetchJob(params.id);
+    if (isEdit && params?.id) fetchJob(params.id, user?.email);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEdit, params?.id]);
+  }, [isEdit, params?.id, user?.email]);
 
   function validate(j) {
     const errs = {};
@@ -1006,13 +946,6 @@ export default function GraphicsJobForm({ mode: modeProp }) {
     }
 
     try {
-      if (UI_ONLY_MODE) {
-        setBanner({ kind: "success", message: "UI mode: form data captured." });
-        setLoading(false);
-        setTimeout(() => navigate(GraphicsRequest.path), 500);
-        return;
-      }
-
       const payload = {
         id: isEdit ? params?.id : Math.floor(Date.now() / 1000),
         ...form,
@@ -1029,8 +962,8 @@ export default function GraphicsJobForm({ mode: modeProp }) {
           url: GRAPHICS_JOBS,
           data: {
             ...payload,
-            message: "Job Data Updated",
             dataUpdated,
+            email: user?.email,
           },
           isPatch: true,
         });
@@ -1046,7 +979,7 @@ export default function GraphicsJobForm({ mode: modeProp }) {
           data: {
             ...payload,
             message: "Job Created",
-            createdBy: { ...userProfile, role: "USER" },
+            createdBy: { ...user },
           },
           isPut: isEdit ? false : true,
           isPatch: isEdit ? true : false,
@@ -1069,11 +1002,9 @@ export default function GraphicsJobForm({ mode: modeProp }) {
   // Open Cloudinary Upload Widget and push results into the chosen array (uses src/utils/cloudinary)
   async function openUpload(target /* 'user' | 'designer' */) {
     try {
-      await loadCloudinaryWidget();
-
-      const folder = `Graphicslab/${
+      const folder = `B2BLab/Graphicslab/${user?.email}/${
         target === "user" ? "UserAssets" : "DesignerAssets"
-      }/${userProfile?.email || "uploads"}`;
+      }`;
 
       openCloudinaryWidget({
         folder,
@@ -2146,7 +2077,7 @@ export default function GraphicsJobForm({ mode: modeProp }) {
                         );
                       })}
 
-                      {userProfile?.role === "DESIGNER" && (
+                      {user?.role === "DESIGNER" && (
                         <button
                           type="button"
                           onClick={() => openUpload("designer")}
@@ -2200,66 +2131,11 @@ export default function GraphicsJobForm({ mode: modeProp }) {
         )}
       </Card>
 
-      {/* Fullscreen Preview Dialog */}
-      {preview ? (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Asset Preview"
-          className="fixed inset-0 z-[999] mx-auto flex flex-col bg-black/70"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setPreview(null);
-          }}
-        >
-          {/* Header */}
-          <div className="flex items-center gap-3 border-b border-white/10 bg-gray-900/90 px-4 py-3">
-            <EyeIcon className="h-5 w-5 text-white/80" />
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium text-white">
-                {preview.name}
-              </div>
-              <a
-                href={preview.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block truncate text-xs hover:underline"
-                style={{
-                  color: hexToRgba(shopColor, 0.8),
-                }}
-                title={preview.url}
-              >
-                {preview.url}
-              </a>
-            </div>
-            <button
-              type="button"
-              onClick={() => setPreview(null)}
-              className="inline-flex items-center rounded-lg bg-white/10 px-2 py-1 text-xs text-white ring-1 ring-white/20 hover:bg-white/20"
-            >
-              Close
-            </button>
-          </div>
-
-          {/* Body */}
-          <div className="flex-1 overflow-hidden bg-gray-950">
-            {preview.isImage ? (
-              <div className="flex h-full w-full items-center justify-center p-4">
-                <img
-                  src={preview.url}
-                  alt={preview.name}
-                  className="max-h-[92vh] max-w-[96vw] rounded-lg shadow-2xl"
-                />
-              </div>
-            ) : (
-              <iframe
-                title="File Preview"
-                src={preview.url}
-                className="h-[calc(100vh-56px)] w-full"
-              />
-            )}
-          </div>
-        </div>
-      ) : null}
+      <AssetPreviewDialog
+        preview={preview}
+        onClose={() => setPreview(null)}
+        accentColor={hexToRgba(shopColor, 0.8)}
+      />
     </Page>
   );
 }

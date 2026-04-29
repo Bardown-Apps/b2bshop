@@ -1,25 +1,29 @@
-export const BASE_URL =
-  "https://bardown-track-a4deb83b7041.herokuapp.com/b2bLab";
+export const BASE_URL = "https://bardown-track-a4deb83b7041.herokuapp.com";
+// export const BASE_URL =
+//   "https://d07b-2607-fea8-b5d-bc20-30d4-1ef4-25fc-2a2d.ngrok-free.app";
 
 // Auth endpoints
 export const CRYPTO_KEY = "122GOBardown";
-export const LOGIN = `/users/signIn`;
-export const CLUBS = "/users/b2bClub";
-export const CATEGORIES = "/users/b2bCategories";
-export const PRODUCTS = "/users/b2bProducts";
-export const CART = "/users/b2bCart";
+export const LOGIN = `/b2bLab/users/signIn`;
+export const CLUBS = "/b2bLab/users/b2bClub";
+export const CATEGORIES = "/b2bLab/users/b2bCategories";
+export const PRODUCTS = "/b2bLab/users/b2bProducts";
+export const CART = "/b2bLab/users/b2bCart";
 
-export const COUNTRIES = "/countries";
-export const RULES = "/users/b2bRules";
+export const COUNTRIES = "/b2bLab/countries";
+export const RULES = "/b2bLab/users/b2bRules";
 
 // export const SHIPPING_RATES = "/users/shippingRates";
 
-export const USER_CREDIT_AMOUNT = "/users/b2bCheckCredit";
-export const PAYPAL_CREATE_ORDER = "/users/createPaypalOrder";
-export const PAYPAL_CAPTURE_ORDER = "/users/capturePaypalOrder";
-export const PO_ORDER_SUBMIT = "/users/b2bPoOrderSubmit";
-export const ORDER = "/users/b2bOrders";
-export const GRAPHICS_JOBS = "/users/b2bGraphicsJobs";
-export const GRAPHICS_ACTIVITIES = "/users/b2bGraphicsActivities";
-export const GRAPHICS_COMMENTS = "/users/b2bGraphicsComments";
-export const SHOP_ORDER_FORM = "/shopTeamVault/eshop/orderForm";
+export const USER_CREDIT_AMOUNT = "/b2bLab/users/b2bCheckCredit";
+export const PAYPAL_CREATE_ORDER = "/b2bLab/users/createPaypalOrder";
+export const PAYPAL_CAPTURE_ORDER = "/b2bLab/users/capturePaypalOrder";
+export const PO_ORDER_SUBMIT = "/b2bLab/users/b2bPoOrderSubmit";
+export const ORDER = "/b2bLab/users/b2bOrders";
+
+export const GRAPHICS_JOBS = "/graphicsLab/jobs";
+export const GRAPHICS_TEAM = "/graphicsLab/team";
+export const GRAPHICS_ACTIVITIES = "/graphicsLab/activities";
+export const GRAPHICS_COMMENTS = "/graphicsLab/comments";
+
+export const SHOP_ORDER_FORM = "/b2bLab/shopTeamVault/eshop/orderForm";

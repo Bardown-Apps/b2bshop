@@ -61,7 +61,7 @@ export function ActivitiesDrawer({ open, onClose, job, activity }) {
   );
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-10">
+    <Dialog open={open} onClose={onClose} className="relative z-9999">
       <div className="fixed inset-0" />
       <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 overflow-hidden">

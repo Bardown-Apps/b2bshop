@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   MagnifyingGlassIcon,
-  PencilIcon,
   PlayIcon,
   TrashIcon,
   BriefcaseIcon,
@@ -23,6 +22,7 @@ import {
   CommentsDrawer,
 } from "./components";
 import { GraphicsJob } from "@/constants/routes";
+import Button from "@/components/Button";
 
 function getJobStatus(s) {
   const val = Array.isArray(s) ? s[s.length - 1] : s;
@@ -47,7 +47,8 @@ function statusChip(status) {
 
 export default function GraphicsJobsList() {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.auth?.user);
+
   const {
     fetchJobs,
     deleteJob: deleteJobApi,
@@ -69,6 +70,7 @@ export default function GraphicsJobsList() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const hasFetchedJobs = useRef(false);
 
   const userProfile = useMemo(() => {
     return {
@@ -79,10 +81,14 @@ export default function GraphicsJobsList() {
   }, [user]);
 
   useEffect(() => {
-    fetchJobs((msg) => setBanner({ kind: "error", message: msg })).then(
-      setJobs,
-    );
-  }, [fetchJobs]);
+    if (hasFetchedJobs.current) return;
+    hasFetchedJobs.current = true;
+    fetchJobs(
+      (msg) => setBanner({ kind: "error", message: msg }),
+      undefined,
+      user?.email ?? "",
+    ).then(setJobs);
+  }, [fetchJobs, user?.email]);
 
   const allStatuses = useMemo(() => {
     const set = new Set(
@@ -113,14 +119,14 @@ export default function GraphicsJobsList() {
   }, [jobs, search, statusFilter]);
 
   const handleFetchActivities = async (id) => {
-    const data = await fetchActivitiesApi(id, (msg) =>
+    const data = await fetchActivitiesApi(id, user?.email, (msg) =>
       setBanner({ kind: "error", message: msg }),
     );
     setActivity(data || []);
   };
 
   const handleFetchComments = async (id) => {
-    const data = await fetchCommentsApi(id, (msg) =>
+    const data = await fetchCommentsApi(id, user?.email, (msg) =>
       setBanner({ kind: "error", message: msg }),
     );
     setComments(data || []);
@@ -129,11 +135,7 @@ export default function GraphicsJobsList() {
   const handleSubmitComment = async () => {
     const jobId = selectedJob?.id;
     if (!jobId) return;
-    const data = await submitCommentApi(
-      jobId,
-      { ...userProfile, role: "USER" },
-      commentMsg,
-    );
+    const data = await submitCommentApi(jobId, user?.email, user, commentMsg);
     if (data) {
       setCommentMsg("");
       setComments(data);
@@ -221,14 +223,12 @@ export default function GraphicsJobsList() {
               />
             </div>
 
-            <IconButton
-              title="Add job"
+            <Button
+              className="ml-2"
               onClick={() => navigate(GraphicsJob.new())}
-              variant="solid"
-              className="sm:ml-2"
             >
-              <UserPlusIcon className="h-5 w-5" />
-            </IconButton>
+              Create Graphics Job
+            </Button>
           </div>
         </div>
 
@@ -268,14 +268,18 @@ export default function GraphicsJobsList() {
                   </tr>
                 ) : (
                   filtered.map((j) => {
-                    const createdBy = `${j?.createdBy?.name ?? "—"} (${
+                    const createdBy = `${j?.createdBy?.companyName ?? "—"} (${
                       j?.createdBy?.email ?? "—"
                     })`;
                     const assigned = Array.isArray(j.assignedTo)
                       ? j.assignedTo[0]
                       : j.assignedTo;
                     return (
-                      <tr key={j.id} className="hover:bg-gray-50">
+                      <tr
+                        key={j.id}
+                        className="cursor-pointer hover:bg-gray-50"
+                        onClick={() => navigate(GraphicsJob.edit(j.id))}
+                      >
                         <td className="px-4 py-3">
                           <div className="mt-0.5 text-xs text-gray-500">
                             ID: {j?.id || "—"}
@@ -312,15 +316,11 @@ export default function GraphicsJobsList() {
                             )}
                           </div> */}
                         </td>
-                        <td className="px-4 py-3">
+                        <td
+                          className="px-4 py-3"
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <div className="flex items-center gap-1">
-                            <IconButton
-                              title="Edit"
-                              onClick={() => navigate(GraphicsJob.edit(j.id))}
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </IconButton>
-
                             {/* {userProfile?.role === "MANAGER" && (
                               <IconButton
                                 title="Delete"
@@ -333,27 +333,38 @@ export default function GraphicsJobsList() {
                               </IconButton>
                             )} */}
 
-                            <IconButton
-                              title="Comments"
-                              onClick={() => {
-                                setCommentDrawer(true);
-                                setSelectedJob(j);
-                                handleFetchComments(j?.id);
-                              }}
-                            >
-                              <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                            </IconButton>
+                            <div className="relative mr-4">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setCommentDrawer(true);
+                                  setSelectedJob(j);
+                                  handleFetchComments(j?.id);
+                                }}
+                                className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100"
+                              >
+                                Comments
+                              </button>
+                              {Number(j?.commentsNumber) > 0 && (
+                                <span className="pointer-events-none absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold leading-4 text-white">
+                                  {Number(j.commentsNumber) > 99
+                                    ? "99+"
+                                    : Number(j.commentsNumber)}
+                                </span>
+                              )}
+                            </div>
 
-                            <IconButton
-                              title="Quick Track"
+                            <button
+                              type="button"
                               onClick={() => {
                                 setLeftDrawer(true);
                                 setSelectedJob(j);
                                 handleFetchActivities(j?.id);
                               }}
+                              className="inline-flex items-center rounded-lg border border-gray-300 bg-white px-2.5 py-1.5 text-xs font-medium text-gray-700 transition hover:bg-gray-100"
                             >
-                              <PlayIcon className="h-4 w-4" />
-                            </IconButton>
+                              Activities
+                            </button>
                           </div>
                         </td>
                       </tr>

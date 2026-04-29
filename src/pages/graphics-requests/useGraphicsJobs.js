@@ -49,54 +49,49 @@ function normalizeJob(it) {
 
 export default function useGraphicsJobs() {
   const { mutateAsync } = usePost();
-  const UI_ONLY_MODE = true;
 
   const fetchJobs = useCallback(
-    async (onError) => {
-      if (UI_ONLY_MODE) return [];
+    async (onError, pagination = {}, email = "") => {
+      const { take = 10, skip = 0 } = pagination;
       try {
         const result = await mutateAsync({
           url: GRAPHICS_JOBS,
-          data: {},
+          data: { take, skip, email },
         });
+
         if (result?.error) {
           onError?.(result.error);
           return [];
         }
         const list = Array.isArray(result?.data)
           ? result.data
-          : result?.data?.data ?? result?.data?.items ?? [];
+          : (result?.data?.data ?? result?.data?.items ?? []);
         return list.map(normalizeJob);
       } catch (err) {
         onError?.(err?.message || "Failed to load jobs.");
         return [];
       }
     },
-    [mutateAsync]
+    [mutateAsync],
   );
 
-  const deleteJob = useCallback(
-    async (payload, onError) => {
-      if (UI_ONLY_MODE) return payload?.id ?? payload?._id ?? null;
-      const id = payload?.id ?? payload?._id;
-      try {
-        await HttpService.delete(GRAPHICS_JOBS, { data: { id } });
-        return id;
-      } catch (err) {
-        onError?.(err?.message || "Delete failed.");
-        return null;
-      }
-    },
-    []
-  );
+  const deleteJob = useCallback(async (payload, onError) => {
+    const id = payload?.id ?? payload?._id;
+    try {
+      await HttpService.delete(GRAPHICS_JOBS, { data: { id } });
+      return id;
+    } catch (err) {
+      onError?.(err?.message || "Delete failed.");
+      return null;
+    }
+  }, []);
 
   const fetchActivities = useCallback(
-    async (id, onError) => {
-      if (UI_ONLY_MODE) return [];
+    async (id, email, onError) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_ACTIVITIES,
-          data: { id },
+          data: { id, email },
         });
         if (result?.error) {
           onError?.(result.error);
@@ -108,16 +103,15 @@ export default function useGraphicsJobs() {
         return [];
       }
     },
-    [mutateAsync]
+    [mutateAsync],
   );
 
   const fetchComments = useCallback(
-    async (id, onError) => {
-      if (UI_ONLY_MODE) return [];
+    async (id, email, onError) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_COMMENTS,
-          data: { id },
+          data: { id, email },
         });
         if (result?.error) {
           onError?.(result.error);
@@ -129,16 +123,15 @@ export default function useGraphicsJobs() {
         return [];
       }
     },
-    [mutateAsync]
+    [mutateAsync],
   );
 
   const submitComment = useCallback(
-    async (jId, createdBy, message, onError) => {
-      if (UI_ONLY_MODE) return [];
+    async (jId, email, createdBy, message, onError) => {
       try {
         const result = await mutateAsync({
           url: GRAPHICS_COMMENTS,
-          data: { id: jId, createdBy, message },
+          data: { id: jId, email, createdBy, message },
           isPut: true,
         });
         if (result?.error) {
@@ -151,7 +144,7 @@ export default function useGraphicsJobs() {
         return null;
       }
     },
-    [mutateAsync]
+    [mutateAsync],
   );
 
   return {
