@@ -26,4 +26,4 @@ export const GRAPHICS_TEAM = "/graphicsLab/team";
 export const GRAPHICS_ACTIVITIES = "/graphicsLab/activities";
 export const GRAPHICS_COMMENTS = "/graphicsLab/comments";
 
-export const SHOP_ORDER_FORM = "/b2bLab/shopTeamVault/eshop/orderForm";
+export const SHOP_ORDER_FORM = "/b2bLab/users/orderForm";

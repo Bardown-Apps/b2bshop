@@ -46,6 +46,7 @@ export function TeamOrderTable({
                 const headingLabel =
                   col?.name || col?.title || col?.fieldName || String(col);
                 const headingTooltip = col?.tooltipTitle || headingLabel;
+
                 return (
                   <th
                     key={
@@ -81,19 +82,36 @@ export function TeamOrderTable({
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
             {rows?.map((row, rowIndex) => {
-              // For rows with size options, ensure all selected sizes for different colors are the same.
+              // For merged multi-product forms, size consistency is checked
+              // per product group (not across different products).
               const sizeMismatchByColor = {};
               const sizeMatchByColor = {};
               if (sizeOptions.length && colorOptions.length) {
-                const colorValues = colorOptions.map((color) => {
-                  const colorKey = color.value;
-                  const raw = row[colorKey];
-                  const val =
-                    raw !== undefined && raw !== null ? String(raw).trim() : "";
-                  return { key: colorKey, value: val };
-                });
-                const nonEmpty = colorValues.filter((v) => v.value !== "");
-                if (nonEmpty.length > 1) {
+                const groupedByProduct = colorOptions.reduce((acc, color) => {
+                  const colorKey = color?.value;
+                  const productKey =
+                    typeof colorKey === "string" && colorKey.includes("::")
+                      ? colorKey.split("::")[0]
+                      : "__single_product__";
+                  if (!acc[productKey]) acc[productKey] = [];
+                  acc[productKey].push(color);
+                  return acc;
+                }, {});
+
+                Object.values(groupedByProduct).forEach((productColors) => {
+                  const colorValues = productColors.map((color) => {
+                    const colorKey = color.value;
+                    const raw = row[colorKey];
+                    const val =
+                      raw !== undefined && raw !== null
+                        ? String(raw).trim()
+                        : "";
+                    return { key: colorKey, value: val };
+                  });
+
+                  const nonEmpty = colorValues.filter((v) => v.value !== "");
+                  if (nonEmpty.length <= 1) return;
+
                   const first = nonEmpty[0].value;
                   const hasMismatch = nonEmpty.some(
                     (v) => v.value !== "" && v.value !== first,
@@ -107,7 +125,7 @@ export function TeamOrderTable({
                       sizeMatchByColor[v.key] = true;
                     });
                   }
-                }
+                });
               }
 
               return (
@@ -155,7 +173,7 @@ export function TeamOrderTable({
                       >
                         <div className="relative group">
                           <input
-                            type="text"
+                            type={isNumberField ? "number" : "text"}
                             value={row[key] ?? ""}
                             onChange={(e) =>
                               onRowChange(rowIndex, key, e.target.value)

@@ -35,7 +35,10 @@ const Cart = () => {
     teams: [],
     colorOptions: [],
     sizeOptions: [],
+    productName: "",
+    customFields: [],
   });
+
   const qtyUpdateTimersRef = useRef({});
 
   const { fields, remove } = useFieldArray({ control, name: "products" });
@@ -165,6 +168,29 @@ const Cart = () => {
 
     const colorSet = new Set();
     const sizeSet = new Set();
+    const colorVariant = product?.variants?.find((v) => v?.variant === "Color");
+    const sizeVariant = product?.variants?.find((v) => v?.variant === "Size");
+    const variantColorKeys = (colorVariant?.values || [])
+      .map((v) => String(v?.value || "").trim())
+      .filter(Boolean);
+    const variantSizeValues = (sizeVariant?.values || [])
+      .map((v) => String(v?.value || "").trim())
+      .filter(Boolean);
+    const customFieldKeys = new Set(
+      (product?.customFields || [])
+        .map((field) =>
+          String(
+            field?.fieldName || field?.name || field?.id || field?.title || "",
+          ).trim(),
+        )
+        .map((key) =>
+          key.includes("::") ? key.split("::").pop()?.trim() : key,
+        )
+        .filter(Boolean),
+    );
+
+    variantColorKeys.forEach((value) => colorSet.add(value));
+    variantSizeValues.forEach((value) => sizeSet.add(value));
 
     for (const team of of.teams || []) {
       for (const combo of team?.orderCombinations || []) {
@@ -174,6 +200,39 @@ const Cart = () => {
         if (combo?.Size) {
           sizeSet.add(String(combo.Size));
         }
+      }
+
+      for (const row of team?.rows || []) {
+        if (!row) continue;
+
+        if (variantColorKeys.length > 0) {
+          variantColorKeys.forEach((colorKey) => {
+            const selectedSize = row?.[colorKey];
+            if (
+              selectedSize !== undefined &&
+              selectedSize !== null &&
+              String(selectedSize).trim() !== ""
+            ) {
+              colorSet.add(colorKey);
+              sizeSet.add(String(selectedSize).trim());
+            }
+          });
+          continue;
+        }
+
+        Object.entries(row).forEach(([key, value]) => {
+          if (key === "id" || key === "rowLabel") return;
+          if (customFieldKeys.has(key)) return;
+          if (
+            value === undefined ||
+            value === null ||
+            String(value).trim() === ""
+          ) {
+            return;
+          }
+          colorSet.add(String(key).trim());
+          sizeSet.add(String(value).trim());
+        });
       }
     }
 
@@ -192,6 +251,9 @@ const Cart = () => {
       teams: of.teams || [],
       colorOptions,
       sizeOptions,
+      productName: product?.name || "",
+      customFields: product?.customFields ?? [],
+      clubName: of.teams?.[0].clubName,
     });
     setSummarySheetOpen(true);
   };
@@ -277,8 +339,7 @@ const Cart = () => {
                                 className="text-gray-500 underline"
                                 onClick={() => handleOpenSummarySheet(product)}
                               >
-                                Team order form — {totalCombinations} item
-                                {totalCombinations === 1 ? "" : "s"}
+                                Team order form
                               </button>
                             </div>
                           )}
@@ -486,6 +547,9 @@ const Cart = () => {
         teams={summarySheetData.teams}
         colorOptions={summarySheetData.colorOptions}
         sizeOptions={summarySheetData.sizeOptions}
+        productName={summarySheetData.productName}
+        clubName={summarySheetData.clubName}
+        customFields={summarySheetData.customFields}
       />
     </main>
   );

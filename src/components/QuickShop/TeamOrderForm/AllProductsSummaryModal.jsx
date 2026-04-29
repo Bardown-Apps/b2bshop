@@ -161,7 +161,7 @@ export function AllProductsSummaryModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-30">
+    <Dialog open={open} onClose={onClose} className="relative z-9999">
       <DialogBackdrop
         transition
         className="fixed inset-0 bg-gray-500/75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150"

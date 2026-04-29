@@ -2,8 +2,10 @@ import { useState, useCallback, useEffect, useMemo } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
 import usePost from "@/hooks/usePost";
+import useTeamOrderFormProducts from "@/hooks/useTeamOrderFormProducts";
 // import { SHOP_ORDER_FORM, SHOP_UI } from "@/constants/services";
 import { set as setShop } from "@/store/slices/shopSlice";
+import { fetchClubs } from "@/store/slices/clubsSlice";
 
 import useCart from "@/pages/cart/useCart";
 import {
@@ -18,6 +20,7 @@ import { classNames } from "@/utils/classNames";
 import { FormSection, ProductImageSection } from "./TeamOrderForm";
 import { SummarySheetModal } from "./TeamOrderForm/SummarySheetModal";
 import { AllProductsSummaryModal } from "./TeamOrderForm/AllProductsSummaryModal";
+import { SHOP_ORDER_FORM } from "@/constants/services";
 
 const STEPS = ["Select Club", "Teams", "Select Products", "Team Order Form"];
 
@@ -38,7 +41,12 @@ function getMergedColumnKey(product, key) {
 function getLastTwoWords(text) {
   const value = text != null ? String(text).trim() : "";
   if (!value) return "Product";
-  const parts = value.split(/\s+/).filter(Boolean);
+  const parts = value
+    .split(/\s+/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => /[A-Za-z0-9]/.test(part));
+  if (!parts.length) return "Product";
   return parts.slice(-2).join(" ");
 }
 
@@ -56,8 +64,8 @@ function hexToRgba(hex, alpha) {
 /** Build form teams (with rows) from step-2 config: each team has playersCount + coachesCount rows; # column shows Player1, Coach1, etc. */
 function createTeamsFromConfig(teamsConfig) {
   return (teamsConfig || []).map((t) => {
-    const players = Math.max(0, Number(t.playersCount) || 0);
-    const coaches = Math.max(0, Number(t.coachesCount) || 0);
+    const players = Math.max(1, Number(t.playersCount) || 1);
+    const coaches = Math.max(1, Number(t.coachesCount) || 1);
     const totalRows = players + coaches;
     const rows = Array.from({ length: totalRows }, (_, i) => {
       const label =
@@ -73,7 +81,7 @@ function createTeamsFromConfig(teamsConfig) {
 }
 
 /** Step 1: Club cards with logo */
-function Step1Clubs({ clubs, selectedClub, onSelect }) {
+function Step1Clubs({ clubs, selectedClub, onSelect, productsLoading }) {
   const themeBg = "#000000";
   const themeLight = hexToRgba(themeBg, 0.12);
   if (!clubs?.length) {
@@ -83,6 +91,7 @@ function Step1Clubs({ clubs, selectedClub, onSelect }) {
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5">
       {clubs.map((club) => {
         const isSelected = selectedClub?.clubId === club?.clubId;
+        const isSelectedLoading = isSelected && productsLoading;
         const logo = club?.clubLogo || club?.clubTileBanner;
         const hasOrderForm = !!club?.orderForm;
         return (
@@ -119,7 +128,12 @@ function Step1Clubs({ clubs, selectedClub, onSelect }) {
             <span className="mt-3 text-sm font-semibold text-gray-900 truncate w-full text-center">
               {club?.clubName || "Unnamed club"}
             </span>
-            {hasOrderForm && (
+            {isSelectedLoading ? (
+              <span className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                <span className="inline-block size-3 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
+                Loading products...
+              </span>
+            ) : hasOrderForm ? (
               <span
                 className="mt-1.5 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
                 style={{
@@ -129,7 +143,7 @@ function Step1Clubs({ clubs, selectedClub, onSelect }) {
               >
                 Form saved
               </span>
-            )}
+            ) : null}
           </button>
         );
       })}
@@ -177,14 +191,14 @@ function Step2Teams({ teamsConfig, onAddTeam, onDeleteTeam, onUpdateTeam }) {
                 <label className="sr-only">Players</label>
                 <input
                   type="number"
-                  min={0}
+                  min={1}
                   max={500}
                   value={team.playersCount === "" ? "" : team.playersCount}
                   onChange={(e) => {
                     const v =
                       e.target.value === ""
                         ? ""
-                        : Math.max(0, parseInt(e.target.value, 10) || 0);
+                        : Math.max(1, parseInt(e.target.value, 10) || 1);
                     onUpdateTeam(index, { ...team, playersCount: v });
                   }}
                   placeholder="Players"
@@ -196,14 +210,14 @@ function Step2Teams({ teamsConfig, onAddTeam, onDeleteTeam, onUpdateTeam }) {
                 <label className="sr-only">Coaches</label>
                 <input
                   type="number"
-                  min={0}
+                  min={1}
                   max={50}
                   value={team.coachesCount === "" ? "" : team.coachesCount}
                   onChange={(e) => {
                     const v =
                       e.target.value === ""
                         ? ""
-                        : Math.max(0, parseInt(e.target.value, 10) || 0);
+                        : Math.max(1, parseInt(e.target.value, 10) || 1);
                     onUpdateTeam(index, { ...team, coachesCount: v });
                   }}
                   placeholder="Coaches"
@@ -244,6 +258,7 @@ function Step2Teams({ teamsConfig, onAddTeam, onDeleteTeam, onUpdateTeam }) {
 function Step5Products({
   club,
   products,
+  isLoading,
   selectedProductIds,
   onToggleProduct,
 }) {
@@ -257,10 +272,13 @@ function Step5Products({
         <p className="text-sm font-medium text-gray-700 mb-4">
           Select products (multi-select)
         </p>
-        {!products?.length ? (
-          <p className="text-gray-500">
-            No products for this club, or still loading.
-          </p>
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-gray-500">
+            <span className="inline-block size-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
+            Loading products...
+          </div>
+        ) : !products?.length ? (
+          <p className="text-gray-500">No products found for this club.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {products.map((product) => {
@@ -330,6 +348,7 @@ function Step4OrderForm({ clubName, teams, onTeamsChange, selectedProducts }) {
         const rawKey =
           field?.fieldName || field?.name || field?.id || field?.title || "";
         const mergedKey = getMergedColumnKey(p, rawKey);
+
         return {
           ...field,
           fieldName: mergedKey,
@@ -408,12 +427,13 @@ function Step4OrderForm({ clubName, teams, onTeamsChange, selectedProducts }) {
   return (
     <>
       <div className="flex flex-col h-full min-h-0">
-        <div className="flex min-h-0 flex-1 overflow-hidden rounded border border-gray-200">
+        <div className="flex min-h-0 flex-1 overflow-y-auto overflow-x-hidden rounded border border-gray-200">
           <ProductImageSection
             product={product}
+            selectedProducts={selectedProducts}
             onSummarySheetClick={() => setSummarySheetOpen(true)}
           />
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 min-h-0">
             <FormSection
               product={mergedProduct}
               clubName={clubName}
@@ -434,6 +454,9 @@ function Step4OrderForm({ clubName, teams, onTeamsChange, selectedProducts }) {
         teams={teams}
         colorOptions={colorOptions}
         sizeOptions={sizeOptions}
+        productName={product?.name}
+        clubName={clubName}
+        customFields={mergedProduct?.customFields || []}
       />
     </>
   );
@@ -511,14 +534,15 @@ function defaultTeamConfig(index) {
   return {
     id: generateId(),
     name: `Team ${index + 1}`,
-    playersCount: 0,
-    coachesCount: 0,
+    playersCount: 1,
+    coachesCount: 1,
   };
 }
 
 export function TeamOrderFormStepperDialog({ open, onClose }) {
   const dispatch = useDispatch();
-  const { clubs, shopName, shopLink } = useSelector((s) => s?.shop);
+  const { shopName, shopLink } = useSelector((s) => s?.shop);
+  const clubs = useSelector((state) => state.clubs.list);
   const { mutateAsync } = usePost();
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedClub, setSelectedClub] = useState(null);
@@ -532,7 +556,11 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
   const { addToCart } = useCart();
 
   const clubId = selectedClub?.clubId;
-  const products = useSelector((state) => state.products.list);
+  const { products, isLoading: productsLoading } = useTeamOrderFormProducts({
+    open,
+    clubId,
+  });
+  const dialogApiLoading = submitLoading || productsLoading;
 
   const selectedProducts = useMemo(
     () =>
@@ -551,8 +579,8 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
         (t.name ?? "").trim() !== "" &&
         t.playersCount !== "" &&
         t.coachesCount !== "" &&
-        Number(t.playersCount) >= 0 &&
-        Number(t.coachesCount) >= 0,
+        Number(t.playersCount) >= 1 &&
+        Number(t.coachesCount) >= 1,
     );
   }, [teamsConfig]);
 
@@ -714,9 +742,9 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
             (t) =>
               (t.name ?? "").trim() !== "" &&
               t.playersCount !== "" &&
-              Number(t.playersCount) >= 0 &&
+              Number(t.playersCount) >= 1 &&
               t.coachesCount !== "" &&
-              Number(t.coachesCount) >= 0,
+              Number(t.coachesCount) >= 1,
           )
         );
       case 2:
@@ -735,9 +763,9 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
       (t) =>
         (t.name ?? "").trim() !== "" &&
         t.playersCount !== "" &&
-        Number(t.playersCount) >= 0 &&
+        Number(t.playersCount) >= 1 &&
         t.coachesCount !== "" &&
-        Number(t.coachesCount) >= 0,
+        Number(t.coachesCount) >= 1,
     ) &&
     selectedProductIds.length > 0 &&
     isStep4Valid(teams, selectedProducts);
@@ -752,15 +780,21 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
           (t) =>
             (t.name ?? "").trim() === "" ||
             t.playersCount === "" ||
-            t.coachesCount === "",
+            t.coachesCount === "" ||
+            Number(t.playersCount) < 1 ||
+            Number(t.coachesCount) < 1,
         );
         if (bad) {
           if ((bad.name ?? "").trim() === "")
             return "Every team must have a name.";
           if (bad.playersCount === "")
             return "Every team must have a number of players.";
+          if (Number(bad.playersCount) < 1)
+            return "Players count must be at least 1 for every team.";
           if (bad.coachesCount === "")
             return "Every team must have a number of coaches.";
+          if (Number(bad.coachesCount) < 1)
+            return "Coaches count must be at least 1 for every team.";
         }
         return null;
       case 2:
@@ -791,25 +825,20 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
             name: p?.name,
           })),
         };
-        const updatedClubs = clubs.map((c) =>
-          String(c?.clubId) === String(selectedClub.clubId)
-            ? { ...c, orderForm }
-            : c,
-        );
 
-        //  const result = await mutateAsync({
-        //    url: SHOP_ORDER_FORM,
-        //    data: { clubs: updatedClubs },
-        //    isPut: true,
-        //  });
+        const result = await mutateAsync({
+          url: SHOP_ORDER_FORM,
+          data: { clubId: selectedClub.clubId, orderForm },
+          isPut: true,
+        });
 
-        // Temporary fallback until SHOP_ORDER_FORM API is available.
-        // Keep the same result shape expected by the flow.
-        const result = { data: { clubs: updatedClubs } };
         if (result?.error) {
           setSubmitError(result.error);
           return;
         }
+
+        dispatch(fetchClubs());
+
         // Fetch shop data again and save in Redux so clubs/orderForm are up to date
 
         // const shopRes = await mutateAsync({
@@ -818,7 +847,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
         // });
         // if (shopRes?.data) dispatch(setShop(shopRes.data));
 
-        dispatch(setShop({ clubs: updatedClubs }));
+        // dispatch(setShop({ clubs: updatedClubs }));
         if (closeOnSuccess) onClose();
       } catch (err) {
         setSubmitError(err?.message ?? "Failed to save");
@@ -854,6 +883,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
       return;
     }
     setStepValidationError(null);
+    setSubmitLoading(true);
 
     // For each selected product, build an orderForm scoped to that product only.
     // In orderForm.teams, each team must only have:
@@ -869,11 +899,49 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
         );
         const colorKeys =
           colorVariant?.values?.map((v) => v?.value).filter(Boolean) ?? [];
+        const customFieldDefs = product?.customFields ?? [];
         const baseUnitPrice = Number(product?.price ?? 0);
 
         const teamsForProduct = (teams || []).map((team) => {
           const orderCombinations = [];
-          const rows = team?.rows || [];
+          const sourceRows = team?.rows || [];
+          const rows = sourceRows.map((row, rowIndex) => {
+            const normalizedRow = {
+              id: row?.id || `${team?.id || team?.name || "team"}-${rowIndex}`,
+            };
+
+            if (row?.rowLabel) {
+              normalizedRow.rowLabel = row.rowLabel;
+            }
+
+            customFieldDefs.forEach((field) => {
+              const rawKey =
+                field?.fieldName || field?.name || field?.id || field?.title;
+              if (!rawKey) return;
+              const mergedFieldKey = getMergedColumnKey(product, rawKey);
+              const value = row?.[mergedFieldKey];
+              if (value !== undefined && value !== null && String(value) !== "") {
+                normalizedRow[rawKey] = value;
+              } else if (
+                row?.[rawKey] !== undefined &&
+                row?.[rawKey] !== null &&
+                String(row?.[rawKey]) !== ""
+              ) {
+                // Backward-compatible fallback when raw key already exists.
+                normalizedRow[rawKey] = row[rawKey];
+              }
+            });
+
+            colorKeys.forEach((colorKey) => {
+              const mergedColorKey = getMergedColumnKey(product, colorKey);
+              const value = row?.[mergedColorKey];
+              if (value !== undefined && value !== null && String(value) !== "") {
+                normalizedRow[colorKey] = value;
+              }
+            });
+
+            return normalizedRow;
+          });
 
           for (const row of rows) {
             if (!row) continue;
@@ -905,7 +973,9 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
 
           return {
             name: team?.name ?? "",
+            clubName: selectedClub?.clubName ?? "",
             orderCombinations,
+            rows,
           };
         });
 
@@ -925,6 +995,8 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
     } catch (e) {
       // addToCart already handles error display; abort submit on failure
       return;
+    } finally {
+      setSubmitLoading(false);
     }
 
     // performSave(true);
@@ -946,6 +1018,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
             clubs={clubs}
             selectedClub={selectedClub}
             onSelect={setSelectedClub}
+            productsLoading={productsLoading}
           />
         );
       case 1:
@@ -962,6 +1035,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
           <Step5Products
             club={selectedClub}
             products={products}
+            isLoading={productsLoading}
             selectedProductIds={selectedProductIds}
             onToggleProduct={toggleProduct}
           />
@@ -995,6 +1069,16 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
             ["--theme-primary-text"]: "#fff",
           }}
         >
+          {dialogApiLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-[1px]">
+              <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm">
+                <span className="inline-block size-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-700" />
+                <span className="text-sm font-medium text-gray-700">
+                  Loading...
+                </span>
+              </div>
+            </div>
+          )}
           {/* Fixed Header */}
           <header className="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 py-4 sm:px-6">
             <h2 className="text-xl font-semibold tracking-tight text-gray-900">
@@ -1005,12 +1089,11 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
                 type="button"
                 onClick={handleSave}
                 disabled={
-                  submitLoading ||
-                  !selectedClub ||
-                  hasRowSizeMismatch ||
-                  !hasAtLeastOneCompleteTeam ||
-                  !hasAtLeastOneProductSelected ||
-                  !hasAtLeastOneSizeSelected
+                  dialogApiLoading || !selectedClub
+                  // hasRowSizeMismatch ||
+                  // !hasAtLeastOneCompleteTeam ||
+                  // !hasAtLeastOneProductSelected ||
+                  // !hasAtLeastOneSizeSelected
                 }
                 className="rounded-md border border-gray-300 bg-white px-5 py-2.5 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[var(--theme-primary)] focus:ring-offset-2 disabled:opacity-70 disabled:pointer-events-none"
               >
@@ -1020,7 +1103,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
                 type="button"
                 onClick={handleSubmitOrder}
                 disabled={
-                  submitLoading ||
+                  dialogApiLoading ||
                   !selectedClub ||
                   hasRowSizeMismatch ||
                   !hasAtLeastOneCompleteTeam ||

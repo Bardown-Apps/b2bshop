@@ -83,7 +83,7 @@ const Checkout = () => {
       const currentProducts = getValues("products");
       updateProducts(currentProducts);
     }
-  }, [country, state, shippingProperty]);
+  }, [country, state, shippingProperty, products]);
 
   if (isCountriesFetching || isRulesFetching) return null;
 

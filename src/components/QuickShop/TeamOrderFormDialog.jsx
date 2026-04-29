@@ -92,6 +92,9 @@ export function TeamOrderFormDialog({ open, onClose, product }) {
         teams={teams}
         colorOptions={colorOptions}
         sizeOptions={sizeOptions}
+        productName={product?.name || ""}
+        clubName={clubName}
+        customFields={product?.customFields ?? []}
       />
     </>
   );

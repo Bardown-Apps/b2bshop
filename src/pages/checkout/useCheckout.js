@@ -387,7 +387,8 @@ const useCheckout = () => {
           ?.filter(Boolean) || [],
       selectedTeam: values?.selectedTeam,
       appliedDiscountRule: getValues("appliedDiscountRule"),
-      appliedProductDiscountRules: getValues("appliedProductDiscountRules") || [],
+      appliedProductDiscountRules:
+        getValues("appliedProductDiscountRules") || [],
       customerEmail: email || signUpEmail,
       customerName: name || signUpName,
       customerLastName: formUserLastName,
@@ -892,6 +893,7 @@ const useCheckout = () => {
           country === p?.country &&
           state === p?.state,
       );
+      console.log(taxBasedProduct);
 
       if (taxBasedProduct?.length > 1) {
         taxBasedProduct = _.maxBy(taxBasedProduct, "weight");

@@ -31,6 +31,7 @@ export function FormSection({
   const [editingTeamName, setEditingTeamName] = useState("");
 
   const customFieldColumns = product?.customFields ?? [];
+
   const colorVariant = product?.variants?.find((v) => v?.variant === "Color");
   const colorOptions =
     colorVariant?.values?.map((v) => ({
@@ -175,7 +176,7 @@ export function FormSection({
 
   if (teams.length === 0) {
     return (
-      <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 p-4">
         {!hideClubName && (
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -213,7 +214,7 @@ export function FormSection({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4 overflow-auto p-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 p-4">
       {!hideClubName && (
         <div>
           <label className="block text-sm font-medium text-gray-700">
@@ -248,7 +249,7 @@ export function FormSection({
       <TabGroup
         selectedIndex={activeTeamIndex}
         onChange={setActiveTeamIndex}
-        className="flex flex-1 flex-col"
+        className="flex min-h-0 flex-1 flex-col"
       >
         <TabList className="flex shrink-0 gap-1 border-b border-gray-200">
           {teams.map((t, idx) => (
@@ -313,9 +314,9 @@ export function FormSection({
             </Tab>
           ))}
         </TabList>
-        <TabPanels className="min-h-0 flex-1 overflow-auto pt-4">
+        <TabPanels className="min-h-0 flex-1 pt-4">
           {teams.map((team, idx) => (
-            <TabPanel key={team.id} className="focus:outline-none">
+            <TabPanel key={team.id} className="h-full focus:outline-none">
               <TeamOrderTable
                 teamName={team.name}
                 rows={team.rows || []}

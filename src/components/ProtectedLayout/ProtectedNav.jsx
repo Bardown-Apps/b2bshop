@@ -35,16 +35,13 @@ const ProtectedNav = () => {
               <NavLink
                 key={label}
                 to={href}
-                className={`relative px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${
+                className={`px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 ${
                   isActive
-                    ? "text-slate-900"
-                    : "text-slate-500 hover:text-slate-700"
+                    ? "text-slate-900 border-slate-900"
+                    : "text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300"
                 } ${leadingItemClass}`}
               >
                 {label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-slate-900 rounded-full" />
-                )}
               </NavLink>
             );
           }
@@ -63,10 +60,10 @@ const ProtectedNav = () => {
                     current === label ? null : label,
                   )
                 }
-                className={`relative px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors flex items-center gap-1 cursor-pointer ${
+                className={`px-4 py-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors border-b-2 flex items-center gap-1 cursor-pointer ${
                   isDropdownActive
-                    ? "text-slate-900"
-                    : "text-slate-500 hover:text-slate-700"
+                    ? "text-slate-900 border-slate-900"
+                    : "text-slate-500 border-transparent hover:text-slate-700 hover:border-slate-300"
                 } ${leadingItemClass}`}
               >
                 {label}
@@ -75,9 +72,6 @@ const ProtectedNav = () => {
                     openDropdown === label ? "rotate-180" : ""
                   }`}
                 />
-                {isDropdownActive && (
-                  <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-slate-900 rounded-full" />
-                )}
               </button>
 
               {openDropdown === label && (
