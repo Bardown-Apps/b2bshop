@@ -29,7 +29,6 @@ const routes = {
   graphicsRequestEdit: "/graphic-request/:id",
   faqs: "/faqs",
   announcements: "/announcements",
-  orderForm: "/order-form",
   createLookBook: "/create-look-book",
   checkout: "/checkout",
   contactUs: "/contact-us",

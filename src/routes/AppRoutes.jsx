@@ -28,7 +28,6 @@ import GraphicsRequests from "@/pages/graphics-requests";
 import GraphicsJobForm from "@/pages/graphics-requests/JobForm";
 import FAQ from "@/pages/faqs";
 import Announcements from "@/pages/announcements";
-import OrderForm from "@/pages/order-form";
 import CreateLookBook from "@/pages/create-look-book";
 import PublicRoute from "@/routes/PublicRoute";
 import PrivateRoute from "@/routes/PrivateRoute";
@@ -95,7 +94,6 @@ const AppRoutes = () => (
         />
         <Route path={routes.faqs} element={<FAQ />} />
         <Route path={routes.announcements} element={<Announcements />} />
-        <Route path={routes.orderForm} element={<OrderForm />} />
         <Route path={routes.createLookBook} element={<CreateLookBook />} />
         <Route path={routes.summaryOrder()} element={<Summary />} />
       </Route>
