@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ACTIONS, ACTION_DESCRIPTIONS } from "@/constants/clubStore";
 import routes from "@/constants/routes";
 
-const ActionButtons = ({ onNewOrderClick }) => {
+const ActionButtons = ({ onNewOrderClick, onOrderFormClick }) => {
   const navigate = useNavigate();
   const [active, setActive] = useState(null);
   const toggle = (label) => setActive(active === label ? null : label);
@@ -20,6 +20,18 @@ const ActionButtons = ({ onNewOrderClick }) => {
 
     if (label === "Graphics Requests") {
       navigate(routes.graphicRequest);
+    }
+
+    if (label === "FAQs") {
+      navigate(routes.faqs);
+    }
+
+    if (label === "Announcements") {
+      navigate(routes.announcements);
+    }
+
+    if (label === "Order Form") {
+      onOrderFormClick?.();
     }
   };
 

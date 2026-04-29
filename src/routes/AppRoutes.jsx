@@ -26,7 +26,7 @@ import Security from "@/pages/security";
 import ComingSoonPage from "@/pages/coming-soon";
 import GraphicsRequests from "@/pages/graphics-requests";
 import GraphicsJobForm from "@/pages/graphics-requests/JobForm";
-import FAQ from "@/pages/faq";
+import FAQ from "@/pages/faqs";
 import Announcements from "@/pages/announcements";
 import OrderForm from "@/pages/order-form";
 import CreateLookBook from "@/pages/create-look-book";
@@ -93,7 +93,7 @@ const AppRoutes = () => (
           path={routes.graphicsRequestEdit}
           element={<GraphicsJobForm mode="edit" />}
         />
-        <Route path={routes.faq} element={<FAQ />} />
+        <Route path={routes.faqs} element={<FAQ />} />
         <Route path={routes.announcements} element={<Announcements />} />
         <Route path={routes.orderForm} element={<OrderForm />} />
         <Route path={routes.createLookBook} element={<CreateLookBook />} />

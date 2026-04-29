@@ -22,3 +22,4 @@ export const ORDER = "/users/b2bOrders";
 export const GRAPHICS_JOBS = "/users/b2bGraphicsJobs";
 export const GRAPHICS_ACTIVITIES = "/users/b2bGraphicsActivities";
 export const GRAPHICS_COMMENTS = "/users/b2bGraphicsComments";
+export const SHOP_ORDER_FORM = "/shopTeamVault/eshop/orderForm";

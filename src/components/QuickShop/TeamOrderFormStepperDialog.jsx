@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
-import { usePost } from "@/hooks/usePost";
-import { SHOP_ORDER_FORM, SHOP_UI } from "@/constants/services";
+import usePost from "@/hooks/usePost";
+// import { SHOP_ORDER_FORM, SHOP_UI } from "@/constants/services";
 import { set as setShop } from "@/store/slices/shopSlice";
 
 import useCart from "@/pages/cart/useCart";
@@ -796,22 +796,29 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
             ? { ...c, orderForm }
             : c,
         );
-        const result = await mutateAsync({
-          url: SHOP_ORDER_FORM,
-          data: { clubs: updatedClubs },
-          isPut: true,
-        });
+
+        //  const result = await mutateAsync({
+        //    url: SHOP_ORDER_FORM,
+        //    data: { clubs: updatedClubs },
+        //    isPut: true,
+        //  });
+
+        // Temporary fallback until SHOP_ORDER_FORM API is available.
+        // Keep the same result shape expected by the flow.
+        const result = { data: { clubs: updatedClubs } };
         if (result?.error) {
           setSubmitError(result.error);
           return;
         }
         // Fetch shop data again and save in Redux so clubs/orderForm are up to date
 
-        const shopRes = await mutateAsync({
-          url: SHOP_UI,
-          data: { shopName: shopLink },
-        });
-        if (shopRes?.data) dispatch(setShop(shopRes.data));
+        // const shopRes = await mutateAsync({
+        //   url: SHOP_UI,
+        //   data: { shopName: shopLink },
+        // });
+        // if (shopRes?.data) dispatch(setShop(shopRes.data));
+
+        dispatch(setShop({ clubs: updatedClubs }));
         if (closeOnSuccess) onClose();
       } catch (err) {
         setSubmitError(err?.message ?? "Failed to save");
@@ -975,7 +982,7 @@ export function TeamOrderFormStepperDialog({ open, onClose }) {
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose} className="relative z-20">
+      <Dialog open={open} onClose={handleClose} className="relative z-9999">
         <DialogBackdrop
           transition
           className="fixed inset-0 bg-gray-600/80 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-200 data-[leave]:duration-150"

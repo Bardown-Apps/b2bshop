@@ -1,37 +1,36 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const Announcements = () => {
-  const { shopName, announcements } = useSelector((s) => s.shop);
+const Faq = () => {
+  const { shopName, faqs } = useSelector((s) => s.shop);
+
   const [openIndex, setOpenIndex] = useState(null);
 
   useEffect(() => {
-    document.title = shopName ? `${shopName} Announcements` : "Announcements";
+    document.title = shopName ? `${shopName} FAQs` : "FAQs";
   }, [shopName]);
 
-  const hasAnnouncements =
-    Array.isArray(announcements) && announcements.length > 0;
+  const hasFaqs = Array.isArray(faqs) && faqs.length > 0;
 
   const toggleIndex = (index) => {
     setOpenIndex((current) => (current === index ? null : index));
   };
 
   return (
-    <div className="mx-autotext-base leading-7 text-gray-700">
+    <div className="mx-auto text-base leading-7 text-gray-700">
       <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-        Announcements
+        Frequently Asked Questions
       </h1>
 
-      {!hasAnnouncements ? (
+      {!hasFaqs ? (
         <div className="mt-10 rounded-lg border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center">
           <p className="text-sm font-medium text-gray-500">
-            There are no announcements at the moment.
+            No FAQs are available right now.
           </p>
         </div>
       ) : (
         <dl className="mt-8 space-y-4">
-          {announcements.map((item, index) => {
+          {faqs.map((item, index) => {
             const isOpen = openIndex === index;
 
             return (
@@ -46,13 +45,8 @@ const Announcements = () => {
                 >
                   <div>
                     <dt className="text-base font-semibold text-gray-900">
-                      {item.title || `Announcement ${index + 1}`}
+                      {item.question}
                     </dt>
-                    {item.date ? (
-                      <p className="mt-1 text-xs uppercase tracking-wide text-gray-500">
-                        {moment(item.date).format("MMM DD, YYYY")}
-                      </p>
-                    ) : null}
                   </div>
 
                   <span className="ml-4 flex h-6 w-6 items-center justify-center rounded-full border border-gray-300 text-gray-500 text-xs">
@@ -62,22 +56,10 @@ const Announcements = () => {
 
                 {isOpen ? (
                   <dd className="px-4 pb-4 text-sm text-gray-600">
-                    {item.image ? (
-                      <div className="mt-2">
-                        <img
-                          src={item.image}
-                          alt={item.title || `Announcement ${index + 1}`}
-                          className="w-full max-h-80 object-cover rounded-md border border-gray-200"
-                        />
-                      </div>
-                    ) : null}
-
-                    {item.description ? (
-                      <div
-                        className="mt-3"
-                        dangerouslySetInnerHTML={{ __html: item.description }}
-                      ></div>
-                    ) : null}
+                    <div
+                      className="mt-2"
+                      dangerouslySetInnerHTML={{ __html: item.answer }}
+                    ></div>
                   </dd>
                 ) : null}
               </div>
@@ -89,4 +71,4 @@ const Announcements = () => {
   );
 };
 
-export default Announcements;
+export default Faq;
