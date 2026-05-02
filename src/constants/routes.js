@@ -19,7 +19,7 @@ const routes = {
   freestyleHeadwear: "/freestyle-headwear",
   freestyleDigitalPrint: "/freestyle-digital-print",
   supportTickets: "/support-tickets",
-  accountUsers: "/account-users",
+  salesReps: "/sales-reps",
   savedCards: "/saved-cards",
   shippingAddresses: "/shipping-addresses",
   security: "/security",

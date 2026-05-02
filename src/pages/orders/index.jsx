@@ -8,6 +8,7 @@ import {
   getOrderCustomerDisplayName,
   getShippingAddressLines,
 } from "@/utils/b2bOrders";
+import { ORDER_STATUS_FILTERS } from "@/constants/orders";
 import OrderCard from "./OrderCard";
 
 const PAGE_SIZE = 10;
@@ -15,7 +16,7 @@ const PAGE_SIZE = 10;
 const Orders = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [filter] = useState("ALL ORDERS");
+  const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [orders, setOrders] = useState([]);
   const [totalCount, setTotalCount] = useState(null);
@@ -31,7 +32,7 @@ const Orders = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, statusFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,6 +45,7 @@ const Orders = () => {
         const body = {
           take: PAGE_SIZE,
           skip,
+          status: statusFilter,
           ...(debouncedSearch ? { search: debouncedSearch } : {}),
         };
 
@@ -72,7 +74,7 @@ const Orders = () => {
     return () => {
       cancelled = true;
     };
-  }, [mutateAsync, page, debouncedSearch]);
+  }, [mutateAsync, page, debouncedSearch, statusFilter]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -133,18 +135,32 @@ const Orders = () => {
           </button>
         </div>
 
-        <div className="flex items-center border border-slate-200 rounded-lg bg-white px-3 py-2.5 text-sm text-slate-700 cursor-pointer gap-2 min-w-36">
-          <span>{filter}</span>
-          <ChevronDown className="w-4 h-4 text-slate-500" />
+        <div className="relative">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="appearance-none border border-slate-200 rounded-lg bg-white pl-3 pr-8 py-2.5 text-sm text-slate-700 cursor-pointer outline-none focus:ring-2 focus:ring-blue-200 transition-all min-w-44"
+            aria-label="Order status"
+          >
+            {ORDER_STATUS_FILTERS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
 
-        {search && (
+        {(search || statusFilter !== "pending") && (
           <button
             type="button"
-            onClick={() => setSearch("")}
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("pending");
+            }}
             className="text-xs text-red-500 hover:text-red-700 font-medium cursor-pointer transition-colors"
           >
-            Clear Results
+            Clear filters
           </button>
         )}
       </div>

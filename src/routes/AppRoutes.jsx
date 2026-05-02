@@ -20,7 +20,7 @@ import ArtLibrary from "@/pages/art-library";
 import FreestyleHeadwear from "@/pages/freestyle-headwear";
 import FreestyleDigitalPrint from "@/pages/freestyle-digital-print";
 import SupportTickets from "@/pages/support-tickets";
-import AccountUsers from "@/pages/account-users";
+import SalesReps from "@/pages/sales-reps";
 import SavedCards from "@/pages/saved-cards";
 import ShippingAddresses from "@/pages/shipping-addresses";
 import Security from "@/pages/security";
@@ -76,8 +76,8 @@ const AppRoutes = () => (
           element={<FreestyleDigitalPrint />}
         />
         <Route path={routes.supportTickets} element={<SupportTickets />} />
-        <Route path={routes.accountUsers} element={<AccountUsers />} />
-        <Route path={routes.savedCards} element={<SavedCards />} />
+        <Route path={routes.salesReps} element={<SalesReps />} />
+        {/* <Route path={routes.savedCards} element={<SavedCards />} /> */}
         <Route
           path={routes.shippingAddresses}
           element={<ShippingAddresses />}

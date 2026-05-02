@@ -104,16 +104,28 @@ export function getOrderCustomerDisplayName(order) {
   return parts.length > 1 ? parts[parts.length - 1] : parts[0];
 }
 
-/** Map API status string to STATUS_COLORS key (handles `PENDING` vs `Pending`). */
+/** Normalize API status for ORDER_STATUS_FILTERS slug keys. */
+function normalizeOrderStatusSlug(status) {
+  return String(status ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+/** Map API status string to STATUS_COLORS (slug, label, legacy Title Case). */
 export function orderStatusColorClass(status, statusColors) {
   const s = String(status ?? "").trim();
   if (!s) return "text-slate-600";
+  const slug = normalizeOrderStatusSlug(s);
   const titled =
     s.length <= 1
       ? s.toUpperCase()
       : s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   return (
     statusColors[s] ??
+    statusColors[slug] ??
     statusColors[titled] ??
     statusColors[s.toUpperCase()] ??
     "text-slate-600"

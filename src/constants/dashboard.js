@@ -65,12 +65,12 @@ export const getDashboardNav = (clubs = []) => [
           name: "Shipping Addresses",
           href: routes.shippingAddresses,
         },
-        {
-          name: "Saved Credit Cards",
+        // {
+        //   name: "Saved Credit Cards",
 
-          href: routes.savedCards,
-        },
-        { name: "Account Users", href: routes.accountUsers },
+        //   href: routes.savedCards,
+        // },
+        { name: "Sales Reps", href: routes.salesReps },
       ],
     },
   },

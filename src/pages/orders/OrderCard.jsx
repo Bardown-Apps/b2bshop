@@ -19,26 +19,26 @@ const Label = ({ children }) => (
 const OrderCard = ({ order }) => {
   const status = order.status ?? order.orderStatus ?? "—";
   const statusColor = orderStatusColorClass(status, STATUS_COLORS);
+  const normalizedStatus = String(status).trim().toLowerCase();
   const orderNumber = order.orderNumber ?? "—";
   const orderedAtRaw =
-    order.orderedAt ??
-    order.createdAt ??
-    order.orderDate ??
-    order.dateOrdered;
+    order.orderedAt ?? order.createdAt ?? order.orderDate ?? order.dateOrdered;
 
-  const shipRaw =
-    order.shipDate ??
-    order.shippedAt ??
-    order.ship_date ??
-    order.estimatedShipDate ??
-    order.estimated_ship_date;
+  const shipRaw = order.shipDate;
+
+  const trackingNumber =
+    order?.trackingNumber ??
+    order?.tracking_number ??
+    order?.shipmentTrackingNumber ??
+    order?.shipment_tracking_number;
+  const showTracking = normalizedStatus.includes("shipped");
   const shipDisplay =
-    shipRaw != null && shipRaw !== "" ? formatOrderedAt(shipRaw) : "—";
-
-  const orderTypeRaw = order.orderType ?? order.order_type;
-  const orderTypeDisplay =
-    orderTypeRaw != null && orderTypeRaw !== ""
-      ? String(orderTypeRaw)
+    showTracking && shipRaw != null && shipRaw !== ""
+      ? formatOrderedAt(shipRaw)
+      : "—";
+  const trackingDisplay =
+    showTracking && trackingNumber != null && trackingNumber !== ""
+      ? String(trackingNumber)
       : "—";
 
   const customerName = getOrderCustomerDisplayName(order);
@@ -95,8 +95,8 @@ const OrderCard = ({ order }) => {
           {/* Order type + shipping */}
           <div className="min-w-[12rem] flex-1 max-w-md">
             <div className="mb-4">
-              <Label>Order Type</Label>
-              <p className="text-sm text-slate-800">{orderTypeDisplay}</p>
+              <Label>Tracking Number</Label>
+              <p className="text-sm text-slate-800">{trackingDisplay}</p>
             </div>
             <div>
               <Label>Shipping Address</Label>

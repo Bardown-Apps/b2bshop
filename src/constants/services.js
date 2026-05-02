@@ -26,5 +26,8 @@ export const GRAPHICS_ACTIVITIES = "/graphicsLab/activities";
 export const GRAPHICS_COMMENTS = "/graphicsLab/comments";
 
 export const SHOP_ORDER_FORM = "/b2bLab/users/orderForm";
-export const SALES_REP = "/b2bLab/users/salesRep";
+export const SALES_REP = "/b2bLab/users/b2bSalesRep";
 export const TICKETS = "/b2bLab/users/b2bSupportTicket";
+
+export const USER = "/b2bLab/users/b2bUserUpdate";
+export const ADDRESSES = "/b2bLab/users/b2bAddresses";

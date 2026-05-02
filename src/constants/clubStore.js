@@ -77,8 +77,9 @@ const variantEntryValue = (item) => {
 };
 
 const valuesFromVariant = (product, variantName) => {
-  const values = product?.variants?.find((v) => v?.variant === variantName)
-    ?.values;
+  const values = product?.variants?.find(
+    (v) => v?.variant === variantName,
+  )?.values;
   return Array.isArray(values) ? values : [];
 };
 

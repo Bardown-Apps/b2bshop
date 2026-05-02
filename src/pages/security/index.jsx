@@ -1,41 +1,170 @@
-import { useState } from 'react'
-import { ShieldCheck, Eye, EyeOff, KeyRound, Smartphone, Clock } from 'lucide-react'
-import AnimateIn from '@/components/AnimateIn'
+import { useMemo, useState } from "react";
+import CryptoJS from "crypto-js";
+import { useDispatch, useSelector } from "react-redux";
+import { ShieldCheck, Eye, EyeOff, KeyRound } from "lucide-react";
+import AnimateIn from "@/components/AnimateIn";
+import { CRYPTO_KEY, USER } from "@/constants/services";
+import usePatch from "@/hooks/usePatch";
+import { login as loginAction } from "@/store/slices/authSlice";
+import { login as loginService } from "@/services/authService";
 
-const inputClass = 'w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-all'
+const inputClass =
+  "w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-200 transition-all";
 
-const LOGIN_ACTIVITY = [
-  { id: '1', device: 'Chrome on macOS', ip: '192.168.1.42', date: 'April 6, 2026 — 2:15 PM', current: true },
-  { id: '2', device: 'Safari on iPhone', ip: '10.0.0.18', date: 'April 5, 2026 — 9:30 AM', current: false },
-  { id: '3', device: 'Chrome on Windows', ip: '172.16.0.55', date: 'March 30, 2026 — 4:45 PM', current: false },
-]
-
-const PasswordField = ({ label, placeholder }) => {
-  const [visible, setVisible] = useState(false)
+const PasswordField = ({
+  id,
+  label,
+  placeholder,
+  value,
+  onChange,
+  disabled,
+}) => {
+  const [visible, setVisible] = useState(false);
 
   return (
     <div>
-      <label className="block text-xs font-bold text-slate-500 uppercase mb-1.5">{label}</label>
+      <label
+        htmlFor={id}
+        className="block text-xs font-bold text-slate-500 uppercase mb-1.5"
+      >
+        {label}
+      </label>
       <div className="relative">
         <input
-          type={visible ? 'text' : 'password'}
+          id={id}
+          type={visible ? "text" : "password"}
           placeholder={placeholder}
           className={inputClass}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
         />
         <button
           type="button"
+          disabled={disabled}
           onClick={() => setVisible(!visible)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 cursor-pointer transition-colors"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {visible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          {visible ? (
+            <EyeOff className="w-4 h-4" />
+          ) : (
+            <Eye className="w-4 h-4" />
+          )}
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const Security = () => {
-  const [passwordSaved, setPasswordSaved] = useState(false)
+  const dispatch = useDispatch();
+  const auth = useSelector((s) => s?.auth || {});
+  const user = auth?.user || {};
+  const token = auth?.token || user?.authToken || null;
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isCurrentVerified, setIsCurrentVerified] = useState(false);
+  const [verifyStatus, setVerifyStatus] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [passwordSaved, setPasswordSaved] = useState(false);
+
+  const { mutate: updateUser, isLoading: isUpdating } = usePatch(USER);
+
+  const isStrongPassword = useMemo(() => {
+    const pwd = newPassword.trim();
+    return pwd.length >= 6;
+  }, [newPassword]);
+
+  const canUpdate =
+    isCurrentVerified &&
+    isStrongPassword &&
+    confirmPassword.trim().length > 0 &&
+    newPassword.trim() === confirmPassword.trim() &&
+    !isUpdating &&
+    !isVerifying;
+
+  const resetForm = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setIsCurrentVerified(false);
+    setVerifyStatus("");
+    setSubmitError("");
+    setPasswordSaved(false);
+  };
+
+  const verifyCurrentPassword = async () => {
+    setSubmitError("");
+    setVerifyStatus("");
+    setIsCurrentVerified(false);
+
+    const email = user?.email;
+    if (!email) {
+      setVerifyStatus("Unable to verify current password. Email is missing.");
+      return;
+    }
+    if (!currentPassword.trim()) {
+      setVerifyStatus("Please enter your current password.");
+      return;
+    }
+
+    try {
+      setIsVerifying(true);
+      await loginService({ email, password: currentPassword });
+      setIsCurrentVerified(true);
+      setVerifyStatus("Current password verified.");
+    } catch (err) {
+      setIsCurrentVerified(false);
+      setVerifyStatus(
+        err?.message || "Current password is incorrect. Please try again.",
+      );
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    setSubmitError("");
+    if (!canUpdate) return;
+
+    const encryptedCurrentPassword = CryptoJS.AES.encrypt(
+      currentPassword.trim(),
+      CRYPTO_KEY,
+    ).toString();
+    const encryptedNewPassword = CryptoJS.AES.encrypt(
+      newPassword.trim(),
+      CRYPTO_KEY,
+    ).toString();
+    const encryptedConfirmPassword = CryptoJS.AES.encrypt(
+      confirmPassword.trim(),
+      CRYPTO_KEY,
+    ).toString();
+
+    const payload = {
+      // userId: user?._id ?? user?.id ?? user?.userId,
+      // email: user?.email,
+      // currentPassword: encryptedCurrentPassword,
+      // password: encryptedNewPassword,
+      // confirmPassword: encryptedConfirmPassword,
+      password: encryptedNewPassword,
+    };
+
+    try {
+      const response = await updateUser(payload);
+      console.log(response);
+
+      dispatch(loginAction(response));
+      setPasswordSaved(true);
+    } catch (err) {
+      setSubmitError(
+        err?.response?.data?.message ??
+          err?.message ??
+          "Could not update password. Please try again.",
+      );
+    }
+  };
 
   return (
     <div>
@@ -50,7 +179,9 @@ const Security = () => {
               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
                 <KeyRound className="w-4 h-4 text-blue-600" />
               </div>
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Change Password</h2>
+              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+                Change Password
+              </h2>
             </div>
 
             {passwordSaved ? (
@@ -58,10 +189,14 @@ const Security = () => {
                 <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                   <ShieldCheck className="w-7 h-7 text-green-600" />
                 </div>
-                <p className="text-sm font-bold text-slate-800 mb-1">Password Updated!</p>
-                <p className="text-sm text-slate-500">Your password has been changed successfully.</p>
+                <p className="text-sm font-bold text-slate-800 mb-1">
+                  Password Updated!
+                </p>
+                <p className="text-sm text-slate-500">
+                  Your password has been changed successfully.
+                </p>
                 <button
-                  onClick={() => setPasswordSaved(false)}
+                  onClick={resetForm}
                   className="mt-4 text-xs text-blue-600 hover:underline font-medium cursor-pointer"
                 >
                   Change again
@@ -69,78 +204,90 @@ const Security = () => {
               </div>
             ) : (
               <div className="space-y-4 max-w-md">
-                <PasswordField label="Current Password" placeholder="Enter current password" />
-                <PasswordField label="New Password" placeholder="Enter new password" />
-                <PasswordField label="Confirm New Password" placeholder="Re-enter new password" />
-                <p className="text-xs text-slate-500 leading-relaxed">Minimum 8 characters with at least one uppercase letter, one number, and one special character.</p>
+                <PasswordField
+                  id="current-password"
+                  label="Current Password"
+                  placeholder="Enter current password"
+                  value={currentPassword}
+                  onChange={(e) => {
+                    setCurrentPassword(e.target.value);
+                    setIsCurrentVerified(false);
+                    setVerifyStatus("");
+                    setSubmitError("");
+                  }}
+                  disabled={isVerifying || isUpdating}
+                />
                 <button
-                  onClick={() => setPasswordSaved(true)}
-                  className="px-8 py-2.5 bg-slate-900 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                  type="button"
+                  onClick={verifyCurrentPassword}
+                  disabled={
+                    isVerifying || isUpdating || !currentPassword.trim()
+                  }
+                  className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-slate-200 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Update Password
+                  {isVerifying ? "Verifying..." : "Verify Current Password"}
+                </button>
+                {verifyStatus ? (
+                  <p
+                    className={`text-xs ${
+                      isCurrentVerified ? "text-green-600" : "text-red-600"
+                    }`}
+                    role="status"
+                  >
+                    {verifyStatus}
+                  </p>
+                ) : null}
+                <PasswordField
+                  id="new-password"
+                  label="New Password"
+                  placeholder="Enter new password"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    setSubmitError("");
+                  }}
+                  disabled={isUpdating}
+                />
+                <PasswordField
+                  id="confirm-password"
+                  label="Confirm New Password"
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    setSubmitError("");
+                  }}
+                  disabled={isUpdating}
+                />
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Minimum 6 characters.
+                </p>
+                {confirmPassword.trim() &&
+                newPassword.trim() !== confirmPassword.trim() ? (
+                  <p className="text-xs text-red-600" role="alert">
+                    New password and confirmation must match.
+                  </p>
+                ) : null}
+                {submitError ? (
+                  <p className="text-xs text-red-600" role="alert">
+                    {submitError}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  disabled={!canUpdate}
+                  onClick={handleUpdatePassword}
+                  className="px-8 py-2.5 bg-slate-900 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-slate-800 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isUpdating ? "Updating..." : "Update Password"}
                 </button>
               </div>
             )}
           </div>
         </AnimateIn>
-
-        <AnimateIn delay={0.1}>
-          <div className="border border-slate-200 rounded-xl bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-                <Smartphone className="w-4 h-4 text-amber-600" />
-              </div>
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Two-Factor Authentication</h2>
-            </div>
-
-            <div className="flex items-center justify-between max-w-md">
-              <div>
-                <p className="text-sm text-slate-700 font-medium">Status</p>
-                <p className="text-xs text-slate-500 mt-0.5">Add an extra layer of security to your account</p>
-              </div>
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
-                Not Enabled
-              </span>
-            </div>
-
-            <button className="mt-5 px-6 py-2.5 bg-slate-900 text-white text-xs font-bold uppercase tracking-wide rounded-lg hover:bg-slate-800 transition-colors cursor-pointer">
-              Enable 2FA
-            </button>
-          </div>
-        </AnimateIn>
-
-        <AnimateIn delay={0.15}>
-          <div className="border border-slate-200 rounded-xl bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
-                <Clock className="w-4 h-4 text-slate-600" />
-              </div>
-              <h2 className="text-sm font-bold text-slate-700 uppercase tracking-wide">Recent Login Activity</h2>
-            </div>
-
-            <div className="divide-y divide-slate-100">
-              {LOGIN_ACTIVITY.map((entry) => (
-                <div key={entry.id} className="flex items-center justify-between py-3.5 first:pt-0 last:pb-0">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-slate-700">{entry.device}</p>
-                      {entry.current && (
-                        <span className="text-[10px] font-semibold uppercase tracking-wide text-green-700 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-full">
-                          Current
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5">IP: {entry.ip}</p>
-                  </div>
-                  <p className="text-xs text-slate-500">{entry.date}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </AnimateIn>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Security
+export default Security;
