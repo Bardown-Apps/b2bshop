@@ -53,6 +53,35 @@ const OrderSummary = ({
 
   const discountRules = rules?.discountRules || [];
 
+  const normalizeDiscountRuleId = (rule) => {
+    const raw = rule?._id ?? rule?.id;
+    if (raw == null || raw === "") return null;
+    if (typeof raw === "object" && raw !== null && "$oid" in raw) {
+      return String(raw.$oid);
+    }
+    return String(raw);
+  };
+
+  /** Same promotion even when API omits id on one payload or uses BSON shape */
+  const discountRulesSemanticallyEqual = (a, b) => {
+    if (!a || !b) return false;
+    if (a.discountBased !== b.discountBased) return false;
+    if (Number(a.discountPercentage ?? NaN) !== Number(b.discountPercentage ?? NaN)) {
+      return false;
+    }
+    const keyA = String(a.keyword ?? "").trim().toUpperCase();
+    const keyB = String(b.keyword ?? "").trim().toUpperCase();
+    return keyA === keyB;
+  };
+
+  const discountRulesMatch = (a, b) => {
+    if (!a || !b) return false;
+    const idA = normalizeDiscountRuleId(a);
+    const idB = normalizeDiscountRuleId(b);
+    if (idA != null && idB != null) return idA === idB;
+    return discountRulesSemanticallyEqual(a, b);
+  };
+
   const getRuleProductIds = (rule) => {
     return Array.isArray(rule?.prodIds)
       ? rule.prodIds
@@ -130,19 +159,6 @@ const OrderSummary = ({
     }
   };
 
-  const sliderSettings = {
-    dots: true,
-    infinite: discountRules.length > 1,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: discountRules.length > 1,
-    autoplaySpeed: 3000,
-    pauseOnHover: true,
-    arrows: false,
-    adaptiveHeight: true,
-  };
-
   // Calculate totals for discount condition checks
   const calculateTotals = () => {
     let totalQuantity = 0;
@@ -212,7 +228,7 @@ const OrderSummary = ({
       case "coupon": {
         // For coupon discounts, always allow applying if rule exists (code will be set on apply)
         // If already applied, check if the coupon code matches from form state
-        if (appliedDiscountRule?._id === rule?._id) {
+        if (discountRulesMatch(appliedDiscountRule, rule)) {
           const couponToCheck = couponCode;
           return (
             couponToCheck &&
@@ -231,11 +247,11 @@ const OrderSummary = ({
   // Check if a discount is currently applied
   const isDiscountApplied = (rule) => {
     if (rule?.discountBased === "product") {
-      return (appliedProductDiscountRules || []).some(
-        (r) => r?._id === rule?._id,
+      return (appliedProductDiscountRules || []).some((r) =>
+        discountRulesMatch(r, rule),
       );
     }
-    return appliedDiscountRule?._id === rule?._id;
+    return discountRulesMatch(appliedDiscountRule, rule);
   };
 
   // Get reason why discount condition is not met
@@ -841,6 +857,7 @@ const OrderSummary = ({
                   {discountRules.map((rule, index) => {
                     const isConditionMet = isDiscountConditionMet(rule);
                     const isApplied = isDiscountApplied(rule);
+
                     const isCoupon = rule?.discountBased === "coupon";
                     // For coupon discounts, allow applying even if condition not met (code will be set on apply)
                     const canApply = isCoupon || isConditionMet;
@@ -848,7 +865,8 @@ const OrderSummary = ({
                       !canApply && !isApplied ? getDiscountReason(rule) : null;
                     const potentialSavings = calculatePotentialSavings(rule);
                     const isBestDiscount =
-                      bestDiscount && bestDiscount.rule?._id === rule?._id;
+                      bestDiscount &&
+                      discountRulesMatch(bestDiscount.rule, rule);
                     const isBestButNotApplied = isBestDiscount && !isApplied;
 
                     return (
@@ -1034,7 +1052,16 @@ const OrderSummary = ({
             <div className="flex items-center justify-between border-t border-gray-200 pt-6">
               <dt className="text-base font-medium">Credit Amount</dt>
               <dd className="text-base font-medium text-gray-900">
-                -${Number(creditAmount)?.toFixed(2)}
+                ${Number(creditAmount)?.toFixed(2)}
+              </dd>
+            </div>
+          ) : null}
+
+          {creditAmount ? (
+            <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+              <dt className="text-base font-medium">Credit Used</dt>
+              <dd className="text-base font-medium text-gray-900">
+                ${Number(creditAmount - creditleft())?.toFixed(2)}
               </dd>
             </div>
           ) : null}
@@ -1049,7 +1076,7 @@ const OrderSummary = ({
           ) : null}
 
           <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-            <dt className="text-base font-medium">Total</dt>
+            <dt className="text-base font-medium">Total Paid</dt>
             <dd className="text-base font-medium text-gray-900">
               ${Number(total) <= 0 ? 0 : total.toFixed(2)}
             </dd>

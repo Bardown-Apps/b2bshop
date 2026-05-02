@@ -146,6 +146,7 @@ const useCheckout = () => {
       appliedProductDiscountRules: [],
       couponCode: "",
       salesRepEmail: salesRepEmail,
+      poNumber: "",
     },
   });
 
@@ -239,6 +240,7 @@ const useCheckout = () => {
       orderNumber,
       metadata: {
         orderNumber,
+        poNumber: String(getValues("poNumber") ?? "").trim(),
         dataCollection: getValues("dataCollection"),
         shopCurrency,
         customPayment,
@@ -376,6 +378,7 @@ const useCheckout = () => {
     const orderNumber = generateShortUuid(6);
 
     const poMetadata = {
+      poNumber: String(getValues("poNumber") ?? "").trim(),
       dataCollection: getValues("dataCollection"),
       paymentStatus: "Pending",
       customPayment,
@@ -657,12 +660,25 @@ const useCheckout = () => {
     const validNonProduct = nonProductRules.filter((rule) =>
       isDiscountConditionMet(rule, totals, couponCode),
     );
-    const bestNonProduct = validNonProduct.length
-      ? validNonProduct.sort(
+    // Coupons require an explicit "Apply" in OrderSummary; do not auto-assign them
+    // when the code merely matches, or the row shows Remove before the user applies.
+    const autoEligibleNonProduct = validNonProduct.filter(
+      (r) => r?.discountBased !== "coupon",
+    );
+    const bestAutoNonProduct = autoEligibleNonProduct.length
+      ? [...autoEligibleNonProduct].sort(
           (a, b) =>
             getPotentialSavingsForRule(b) - getPotentialSavingsForRule(a),
         )[0]
       : null;
+
+    const prevApplied = getValues("appliedDiscountRule");
+    let nextNonProductRule = bestAutoNonProduct;
+    if (prevApplied?.discountBased === "coupon") {
+      nextNonProductRule = isDiscountConditionMet(prevApplied, totals, couponCode)
+        ? prevApplied
+        : bestAutoNonProduct;
+    }
 
     const productRules = discountRules.filter(
       (r) => r?.discountBased === "product",
@@ -671,11 +687,8 @@ const useCheckout = () => {
       isDiscountConditionMet(rule, totals, couponCode),
     );
 
-    setValue("appliedDiscountRule", bestNonProduct);
+    setValue("appliedDiscountRule", nextNonProductRule);
     setValue("appliedProductDiscountRules", validProductRules);
-    if (bestNonProduct?.discountBased === "coupon" && bestNonProduct?.keyword) {
-      setValue("couponCode", bestNonProduct.keyword.toUpperCase());
-    }
   }, [
     rules?.discountRules,
     productsWatched,

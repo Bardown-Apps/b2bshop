@@ -33,7 +33,9 @@ const ContactInformation = ({ control, setValue }) => {
           : Array.isArray(data?.data)
             ? data.data
             : [];
-      const mergedSalesReps = apiSalesReps.length ? apiSalesReps : salesReps || [];
+      const mergedSalesReps = apiSalesReps.length
+        ? apiSalesReps
+        : salesReps || [];
       setSalesRepOptions(mergedSalesReps);
       setSelectedSalesRepIndex(-1);
     } catch (error) {
@@ -61,7 +63,10 @@ const ContactInformation = ({ control, setValue }) => {
       selectedSalesRep?.phoneNumber || selectedSalesRep?.phone || "";
     const salesRepEmail = selectedSalesRep?.email || "";
 
-    setValue("userName", firstName, { shouldDirty: true, shouldValidate: true });
+    setValue("userName", firstName, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
     setValue("userLastName", lastName, {
       shouldDirty: true,
       shouldValidate: true,
@@ -223,7 +228,9 @@ const ContactInformation = ({ control, setValue }) => {
 
               <div className="max-h-80 overflow-auto px-4 py-3">
                 {isSalesRepLoading && (
-                  <p className="text-sm text-slate-500">Loading sales reps...</p>
+                  <p className="text-sm text-slate-500">
+                    Loading sales reps...
+                  </p>
                 )}
 
                 {!isSalesRepLoading && salesRepError && (
@@ -238,33 +245,37 @@ const ContactInformation = ({ control, setValue }) => {
                     </p>
                   )}
 
-                {!isSalesRepLoading && !salesRepError && salesRepOptions.length > 0 && (
-                  <ul className="space-y-2">
-                    {salesRepOptions.map((rep, index) => (
-                      <li key={`${rep?.email || rep?.name || "rep"}-${index}`}>
-                        <button
-                          type="button"
-                          className={`w-full rounded-md border px-3 py-2 text-left transition ${
-                            selectedSalesRepIndex === index
-                              ? "border-slate-800 bg-slate-50"
-                              : "border-slate-200 hover:border-slate-300"
-                          }`}
-                          onClick={() => setSelectedSalesRepIndex(index)}
+                {!isSalesRepLoading &&
+                  !salesRepError &&
+                  salesRepOptions.length > 0 && (
+                    <ul className="space-y-2">
+                      {salesRepOptions.map((rep, index) => (
+                        <li
+                          key={`${rep?.email || rep?.name || "rep"}-${index}`}
                         >
-                          <p className="text-sm font-medium text-slate-800">
-                            {rep?.name || rep?.nme || "Unnamed Sales Rep"}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {rep?.email || "No email"}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {rep?.phoneNumber || rep?.phone || "No phone"}
-                          </p>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                          <button
+                            type="button"
+                            className={`w-full rounded-md border px-3 py-2 text-left transition ${
+                              selectedSalesRepIndex === index
+                                ? "border-slate-800 bg-slate-50"
+                                : "border-slate-200 hover:border-slate-300"
+                            }`}
+                            onClick={() => setSelectedSalesRepIndex(index)}
+                          >
+                            <p className="text-sm font-medium text-slate-800">
+                              {rep?.name || rep?.nme || "Unnamed Sales Rep"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {rep?.email || "No email"}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {rep?.phoneNumber || rep?.phone || "No phone"}
+                            </p>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
               </div>
 
               <div className="flex justify-end gap-2 border-t border-slate-200 px-4 py-3">

@@ -27,3 +27,4 @@ export const GRAPHICS_COMMENTS = "/graphicsLab/comments";
 
 export const SHOP_ORDER_FORM = "/b2bLab/users/orderForm";
 export const SALES_REP = "/b2bLab/users/salesRep";
+export const TICKETS = "/b2bLab/users/b2bSupportTicket";
