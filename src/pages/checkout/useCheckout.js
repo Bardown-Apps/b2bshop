@@ -25,8 +25,12 @@ const useCheckout = () => {
   const [shippingRates, setShippingRates] = useState(null);
   const auth = useSelector((s) => s?.auth || {});
   const userState = { ...(auth?.user || {}), authToken: auth?.token || null };
+  const salesRepName = auth?.user?.salesReps?.[0]?.name || "";
+  const salesRepLastName = auth?.user?.salesReps?.[0]?.lastName || "";
+  const salesRepPhone = auth?.user?.salesReps?.[0]?.phoneNumber || "";
+  const salesRepEmail = auth?.user?.salesReps?.[0]?.email || "";
   const { data: creditAmount } = useUserCreditAmount();
-  const { name, email, phone, authToken } = userState;
+  const { name, email, phone } = userState;
   const {
     shopName,
     shippingWays,
@@ -131,16 +135,17 @@ const useCheckout = () => {
         shippingWays?.find((s) => s?.name === "Pickup" && s?.value)?.state ||
         "",
       postalCode: "",
-      phone: "",
+      phone: phone || salesRepPhone,
       shippingTaxValuePercentage: 0,
       shippingTaxValue: 0,
       shippingWayShipFee: -1,
-      userName: "",
-      userLastName: "",
+      userName: salesRepName,
+      userLastName: salesRepLastName,
       selectedShippingWay: "",
       appliedDiscountRule: null,
       appliedProductDiscountRules: [],
       couponCode: "",
+      salesRepEmail: salesRepEmail,
     },
   });
 
@@ -893,7 +898,6 @@ const useCheckout = () => {
           country === p?.country &&
           state === p?.state,
       );
-      console.log(taxBasedProduct);
 
       if (taxBasedProduct?.length > 1) {
         taxBasedProduct = _.maxBy(taxBasedProduct, "weight");
@@ -1101,7 +1105,9 @@ const useCheckout = () => {
       };
     }
 
-    setValue("products", updatedProducts);
+    if (!_.isEqual(p, updatedProducts)) {
+      setValue("products", updatedProducts);
+    }
   };
 
   const applicalbleRule = getApplicableRule();

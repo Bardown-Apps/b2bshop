@@ -125,7 +125,7 @@ const CustomerInformation = ({
         </div>
       )}
 
-      <ContactInformation control={control} />
+      <ContactInformation control={control} setValue={setValue} />
 
       {!paypal && (
         <BillToInformation

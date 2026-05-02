@@ -1,11 +1,11 @@
-import { TRENDING } from '@/constants/navigation'
-import SectionHeader from '@/components/SectionHeader'
-import ProductCard from '@/components/ProductCard'
-import CTABanner from '@/components/CTABanner'
-import useInView from '@/hooks/useInView'
+import { TRENDING } from "@/constants/navigation";
+import SectionHeader from "@/components/SectionHeader";
+import ProductCard from "@/components/ProductCard";
+import CTABanner from "@/components/CTABanner";
+import useInView from "@/hooks/useInView";
 
 const TrendingSection = ({ onAction }) => {
-  const [ref, inView] = useInView({ threshold: 0.05 })
+  const [ref, inView] = useInView({ threshold: 0.05 });
 
   return (
     <section id="new" className="py-14 md:py-24 bg-white">
@@ -16,13 +16,16 @@ const TrendingSection = ({ onAction }) => {
           actionLabel="Explore All"
           onAction={onAction}
         />
-        <div ref={ref} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-5">
+        <div
+          ref={ref}
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-5"
+        >
           {TRENDING.map((product, i) => (
             <ProductCard
               key={product.sku}
               product={product}
               onClick={onAction}
-              className={inView ? 'animate-fade-up' : 'opacity-0'}
+              className={inView ? "animate-fade-up" : "opacity-0"}
               style={{ animationDelay: `${i * 0.08}s` }}
             />
           ))}
@@ -30,7 +33,7 @@ const TrendingSection = ({ onAction }) => {
         <CTABanner onAction={onAction} />
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default TrendingSection
+export default TrendingSection;

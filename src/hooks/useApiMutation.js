@@ -1,6 +1,9 @@
 import { useCallback, useState } from 'react'
 import HttpService from '@/services/http'
 
+/** Stable fallback so `mutate` stays memoized when callers omit config. */
+const EMPTY_CONFIG = {}
+
 const runRequest = (method, url, payload, config) => {
   if (method === 'delete') {
     return HttpService.delete(url, { ...config, data: payload })
@@ -9,7 +12,7 @@ const runRequest = (method, url, payload, config) => {
   return HttpService[method](url, payload, config)
 }
 
-export default function useApiMutation(method, defaultUrl = '', defaultConfig = {}) {
+export default function useApiMutation(method, defaultUrl = '', defaultConfig = EMPTY_CONFIG) {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)

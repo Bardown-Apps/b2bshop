@@ -67,7 +67,8 @@ const normalizeProduct = (product, clubs) => {
       : `$${numericPrice.toFixed(2)}`;
 
   return {
-    id: product?.prodId,
+    ...product,
+    id: product?.prodId ?? product?.id,
     name: getProductName(product),
     category: getProductCategory(product),
     club: getProductClub(product, clubs),
@@ -83,17 +84,21 @@ const ProductGrid = () => {
   const clubs = useSelector((state) => state.clubs.list);
   const categories = useSelector((state) => state.categories.list);
   const products = useSelector((state) => state.products.list);
-  const filterOptions = useMemo(() => getFilterOptions(clubs), [clubs]);
+  const filterOptions = useMemo(
+    () => getFilterOptions(clubs, products),
+    [clubs, products],
+  );
   const availableClubNames = useMemo(
     () => filterOptions.Clubs.map((club) => club.name),
     [filterOptions.Clubs],
   );
+
   const normalizedProducts = useMemo(
     () =>
       products
         .map((product) => normalizeProduct(product, clubs))
         .filter((product) => Boolean(product.name)),
-    [products],
+    [products, clubs],
   );
   const categoryTabs = useMemo(() => {
     const dynamicTabs = categories
@@ -122,8 +127,8 @@ const ProductGrid = () => {
     Clubs: [],
     Size: [],
     Color: [],
-    priceMin: "",
-    priceMax: "",
+    priceSort: "",
+    nameSort: "",
   });
   const selectedTeam = searchParams.get("team")?.trim() || "";
 
@@ -140,34 +145,48 @@ const ProductGrid = () => {
     });
   }, [selectedTeam, availableClubNames]);
 
-  const filtered = normalizedProducts.filter((p) => {
-    const matchCat = activeCategory === "All" || p.category === activeCategory;
-    const matchSearch =
-      !search || p.name.toLowerCase().includes(search.toLowerCase());
-    const matchClub =
-      filters.Clubs.length === 0 || filters.Clubs.includes(p.club);
-    const matchSize =
-      filters.Size.length === 0 ||
-      p.sizes.some((s) => filters.Size.includes(s));
-    const matchColor =
-      filters.Color.length === 0 ||
-      filters.Color.some((c) => p.color.includes(c));
+  const filtered = useMemo(() => {
+    const rows = normalizedProducts.filter((p) => {
+      const matchCat =
+        activeCategory === "All" || p.category === activeCategory;
+      const matchSearch =
+        !search || p.name.toLowerCase().includes(search.toLowerCase());
+      const matchClub =
+        filters.Clubs.length === 0 || filters.Clubs.includes(p.club);
+      const matchSize =
+        filters.Size.length === 0 ||
+        p.sizes.some((s) => filters.Size.includes(s));
+      const matchColor =
+        filters.Color.length === 0 ||
+        filters.Color.some((c) => p.color.includes(c));
 
-    const matchMin =
-      !filters.priceMin || p.numericPrice >= Number(filters.priceMin);
-    const matchMax =
-      !filters.priceMax || p.numericPrice <= Number(filters.priceMax);
+      return matchCat && matchSearch && matchClub && matchSize && matchColor;
+    });
 
-    return (
-      matchCat &&
-      matchSearch &&
-      matchClub &&
-      matchSize &&
-      matchColor &&
-      matchMin &&
-      matchMax
-    );
-  });
+    const nameCmp = (a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
+
+    if (filters.priceSort === "high-low") {
+      rows.sort((a, b) => b.numericPrice - a.numericPrice);
+    } else if (filters.priceSort === "low-high") {
+      rows.sort((a, b) => a.numericPrice - b.numericPrice);
+    } else if (filters.nameSort === "a-z") {
+      rows.sort((a, b) => nameCmp(a, b));
+    } else if (filters.nameSort === "z-a") {
+      rows.sort((a, b) => nameCmp(b, a));
+    }
+
+    return rows;
+  }, [
+    normalizedProducts,
+    activeCategory,
+    search,
+    filters.Clubs,
+    filters.Size,
+    filters.Color,
+    filters.priceSort,
+    filters.nameSort,
+  ]);
 
   const handleCategoryChange = (cat) => {
     if (cat === activeCategory) return;
@@ -180,7 +199,15 @@ const ProductGrid = () => {
   };
 
   const handleFilterChange = (key, values) => {
-    setFilters((prev) => ({ ...prev, [key]: values }));
+    setFilters((prev) => {
+      const next = { ...prev, [key]: values };
+      if (key === "priceSort" && values) {
+        next.nameSort = "";
+      } else if (key === "nameSort" && values) {
+        next.priceSort = "";
+      }
+      return next;
+    });
 
     if (key === "Clubs") {
       const nextParams = new URLSearchParams(searchParams);
@@ -196,7 +223,13 @@ const ProductGrid = () => {
   };
 
   const handleReset = () => {
-    setFilters({ Clubs: [], Size: [], Color: [], priceMin: "", priceMax: "" });
+    setFilters({
+      Clubs: [],
+      Size: [],
+      Color: [],
+      priceSort: "",
+      nameSort: "",
+    });
     setGridKey((k) => k + 1);
   };
 
@@ -204,8 +237,8 @@ const ProductGrid = () => {
     filters.Clubs.length +
     filters.Size.length +
     filters.Color.length +
-    (filters.priceMin ? 1 : 0) +
-    (filters.priceMax ? 1 : 0);
+    (filters.priceSort ? 1 : 0) +
+    (filters.nameSort ? 1 : 0);
 
   return (
     <div className="flex flex-col">

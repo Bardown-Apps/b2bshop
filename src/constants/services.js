@@ -1,6 +1,5 @@
 export const BASE_URL = "https://bardown-track-a4deb83b7041.herokuapp.com";
-// export const BASE_URL =
-//   "https://d07b-2607-fea8-b5d-bc20-30d4-1ef4-25fc-2a2d.ngrok-free.app";
+// export const BASE_URL = "https://adelle-beefy-wesley.ngrok-free.dev";
 
 // Auth endpoints
 export const CRYPTO_KEY = "122GOBardown";
@@ -27,3 +26,4 @@ export const GRAPHICS_ACTIVITIES = "/graphicsLab/activities";
 export const GRAPHICS_COMMENTS = "/graphicsLab/comments";
 
 export const SHOP_ORDER_FORM = "/b2bLab/users/orderForm";
+export const SALES_REP = "/b2bLab/users/salesRep";

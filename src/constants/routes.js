@@ -35,6 +35,9 @@ const routes = {
   cart: "/cart",
   summary: "/summary",
   summaryOrder: (orderNumber = ":orderNumber") => `/summary/${orderNumber}`,
+  /** Protected order detail (admin-style view under authenticated layout). */
+  ORDER_DETAILS: "/:orderNumber/order",
+  orderDetailsPath: (orderNumber = ":orderNumber") => `/${orderNumber}/order`,
 };
 
 export const Home = { path: routes.home };
@@ -43,6 +46,7 @@ export const Product = { path: routes.product };
 export const ContactUs = { path: routes.contactUs };
 export const Cart = { path: routes.cart };
 export const Summary = { path: routes.summary };
+export const OrderDetails = { path: routes.ORDER_DETAILS };
 export const GraphicsRequest = { path: routes.graphicRequest };
 export const GraphicsJob = {
   new: () => routes.graphicsRequestNew,

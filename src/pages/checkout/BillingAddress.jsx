@@ -28,12 +28,12 @@ const BillingAddress = ({
   }, [setValue]);
 
   return (
-    <div className="mt-4 border-t border-gray-200 pt-8">
-      <h2 className="text-lg font-medium text-gray-900 pb-4">
+    <div className="mt-6 border-t border-gray-200 pt-6">
+      <h2 className="pb-2 text-lg font-semibold text-gray-900">
         Billing Address
       </h2>
 
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-4">
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-4">
         <div className="sm:col-span-2">
           <Input
             name="billToName"
@@ -49,91 +49,103 @@ const BillingAddress = ({
           />
         </div>
 
-        <Input
-          name="billToAddress"
-          label="Address Line 1"
-          control={control}
-          required
-          rules={{
-            required: "Address is required",
-            validate: (value) =>
-              value.trim() !== "" || "Address cannot be empty",
-          }}
-          placeholder="Enter Address Line 1"
-        />
+        <div className="sm:col-span-1">
+          <Input
+            name="billToAddress"
+            label="Address Line 1"
+            control={control}
+            required
+            rules={{
+              required: "Address is required",
+              validate: (value) =>
+                value.trim() !== "" || "Address cannot be empty",
+            }}
+            placeholder="Enter Address Line 1"
+          />
+        </div>
 
-        <Input
-          name="billToAddress2"
-          label="Address Line 2"
-          control={control}
-          placeholder="Enter Address Line 2"
-        />
+        <div className="sm:col-span-1">
+          <Input
+            name="billToAddress2"
+            label="Address Line 2"
+            control={control}
+            placeholder="Enter Address Line 2"
+          />
+        </div>
 
-        <Select
-          control={control}
-          name="billToCountry"
-          label="Country"
-          placeholder="Select Country"
-          options={countries?.map((c) => ({
-            value: c?.name,
-            label: c?.name,
-          }))}
-          required
-          rules={{
-            required: "Country is required",
-          }}
-        />
-
-        <Select
-          name="billToState"
-          label="State"
-          control={control}
-          required
-          rules={{
-            required: "State is required",
-          }}
-          placeholder="Select State"
-          options={countries
-            ?.find((c) => c.name === country)
-            ?.states?.map((s) => ({
-              value: s?.name,
-              label: s?.name,
+        <div className="sm:col-span-1">
+          <Select
+            control={control}
+            name="billToCountry"
+            label="Country"
+            placeholder="Select Country"
+            options={countries?.map((c) => ({
+              value: c?.name,
+              label: c?.name,
             }))}
-        />
+            required
+            rules={{
+              required: "Country is required",
+            }}
+          />
+        </div>
 
-        <Input
-          name="billToCity"
-          label="City"
-          control={control}
-          required
-          rules={{
-            required: "City is required",
-            validate: (value) => value.trim() !== "" || "City cannot be empty",
-          }}
-          placeholder="Enter City"
-        />
+        <div className="sm:col-span-1">
+          <Select
+            name="billToState"
+            label="State"
+            control={control}
+            required
+            rules={{
+              required: "State is required",
+            }}
+            placeholder="Select State"
+            options={countries
+              ?.find((c) => c.name === country)
+              ?.states?.map((s) => ({
+                value: s?.name,
+                label: s?.name,
+              }))}
+          />
+        </div>
 
-        <Input
-          name="billToPostalCode"
-          label="Postal Code"
-          control={control}
-          required
-          rules={{
-            required: "Postal Code is required",
-            validate: (value) =>
-              value.trim() !== "" || "Postal Code cannot be empty",
-          }}
-          placeholder="Enter Postal Code"
-          onBlur={async (e) => {
-            const value = e.target.value.trim();
+        <div className="sm:col-span-1">
+          <Input
+            name="billToCity"
+            label="City"
+            control={control}
+            required
+            rules={{
+              required: "City is required",
+              validate: (value) => value.trim() !== "" || "City cannot be empty",
+            }}
+            placeholder="Enter City"
+          />
+        </div>
 
-            if (value.length >= 5 && !!shipStationConnection && !!country) {
-              setLoading(true);
-              // await getShippingRates(value);
-              setLoading(false);
-            }
-          }}
-        />
+        <div className="sm:col-span-1">
+          <Input
+            name="billToPostalCode"
+            label="Postal Code"
+            control={control}
+            required
+            rules={{
+              required: "Postal Code is required",
+              validate: (value) =>
+                value.trim() !== "" || "Postal Code cannot be empty",
+            }}
+            placeholder="Enter Postal Code"
+            onBlur={async (e) => {
+              const value = e.target.value.trim();
+
+              if (value.length >= 5 && !!shipStationConnection && !!country) {
+                setLoading(true);
+                // await getShippingRates(value);
+                setLoading(false);
+              }
+            }}
+          />
+        </div>
       </div>
 
       {loading && (

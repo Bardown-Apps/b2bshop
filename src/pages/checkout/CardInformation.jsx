@@ -418,28 +418,6 @@ const CardInformation = ({
           </div>
         )}
 
-      {/* {hasAirwallexData &&
-        (!shop?.customPayment?.value ||
-          (shop?.customPayment?.value &&
-            Number(shop?.customPayment?.paymentPercentage) > 0)) &&
-        Number(total) > 0 && (
-          <div className="mt-4 grid grid-cols-1">
-            <div className="border py-4 px-2 mt-2 rounded">
-              <div id={airwallexContainerId} />
-              {airwallexLoading && (
-                <p className="mt-2 text-sm text-gray-500">
-                  Loading Airwallex payment fields...
-                </p>
-              )}
-              {airwallexError && (
-                <p className="mt-2 text-sm text-red-500">
-                  Failed to load Airwallex payment fields.
-                </p>
-              )}
-            </div>
-          </div>
-        )} */}
-
       {shop?.customPayment?.value && (
         <div className="border-t border-gray-200 pt-5">
           <p className="text-sm text-gray-500">

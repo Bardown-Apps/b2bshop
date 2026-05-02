@@ -11,6 +11,7 @@ import Product from "@/pages/product";
 import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import Summary from "@/pages/summary";
+import Order from "@/pages/order";
 import Account from "@/pages/account";
 import Orders from "@/pages/orders";
 import Support from "@/pages/support";
@@ -96,6 +97,7 @@ const AppRoutes = () => (
         <Route path={routes.announcements} element={<Announcements />} />
         <Route path={routes.createLookBook} element={<CreateLookBook />} />
         <Route path={routes.summaryOrder()} element={<Summary />} />
+        <Route path={routes.ORDER_DETAILS} element={<Order />} />
       </Route>
     </Route>
   </Routes>

@@ -1,14 +1,15 @@
+import { useCallback } from 'react'
 import useApiMutation from '@/hooks/useApiMutation'
 import HttpService from '@/services/http'
 
-export default function usePost(defaultUrl = '', defaultConfig = {}) {
+export default function usePost(defaultUrl = '', defaultConfig) {
   const { mutate, data, error, isLoading, reset } = useApiMutation(
     'post',
     defaultUrl,
     defaultConfig,
   )
 
-  const mutateAsync = async (payload, options = {}) => {
+  const mutateAsync = useCallback(async (payload, options = {}) => {
     // Backward compatibility for copied flows that call:
     // mutateAsync({ url, data, isPut, isPatch, isDelete })
     if (payload && typeof payload === 'object' && payload.url) {
@@ -27,7 +28,7 @@ export default function usePost(defaultUrl = '', defaultConfig = {}) {
 
     const result = await mutate(payload, options)
     return { data: result }
-  }
+  }, [mutate])
 
   return {
     mutate,

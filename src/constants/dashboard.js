@@ -31,23 +31,6 @@ export const PROFILE = {
   },
 };
 
-export const RECENT_ORDERS = [
-  {
-    id: "1",
-    orderNumber: "ORD-10482",
-    status: "Shipped",
-    orderedAt: "03/28/2026",
-    total: 1284.5,
-  },
-  {
-    id: "2",
-    orderNumber: "ORD-10471",
-    status: "Delivered",
-    orderedAt: "03/15/2026",
-    total: 756.0,
-  },
-];
-
 export const getDashboardNav = (clubs = []) => [
   {
     label: "CLUB STORE",
