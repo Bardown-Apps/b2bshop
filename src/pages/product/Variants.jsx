@@ -427,22 +427,27 @@ const Variants = ({ product, setProduct, isBulkOrder }) => {
 
   useEffect(() => {
     const sizeVariants = product?.variants?.find((v) => v?.variant === "Size");
+    const values = sizeVariants?.values;
 
-    if (!sizes?.length && product.variants && !!sizeVariants && isBulkOrder) {
-      // setSizes(
-      //   sizeVariants?.values?.map((v) => ({
-      //     value: v?.value,
-      //     qty: 0,
-      //     customFields: product?.customFields,
-      //  }))
-      // );
+    if (
+      !sizes?.length &&
+      product?.variants &&
+      !!sizeVariants &&
+      isBulkOrder &&
+      Array.isArray(values) &&
+      values.length > 0
+    ) {
+      const cfSource = Array.isArray(product?.customFields)
+        ? product.customFields
+        : [];
 
-      const newSize = {
-        value: sizeVariants?.values[0]?.value,
-        qty: 0,
-        customFields: product?.customFields,
-      };
-      setSizes([...sizes, newSize]);
+      setSizes(
+        values.map((v) => ({
+          value: v?.value ?? "",
+          qty: 0,
+          customFields: cfSource.map((cf) => ({ ...cf, value: "" })),
+        })),
+      );
     }
   }, [variants, product.variants, product, isBulkOrder, sizes]);
 
@@ -892,9 +897,9 @@ const Variants = ({ product, setProduct, isBulkOrder }) => {
                             ];
                           });
                         }}
-                        className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold shadow-sm hover:opacity-90"
+                        className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold shadow-sm hover:opacity-90 border border-slate-300"
                         style={{
-                          backgroundColor: "#0f172a",
+                          backgroundColor: "#ffffff",
                           color: "#0f172a",
                         }}
                         title="Add new size"
@@ -1355,176 +1360,176 @@ const Variants = ({ product, setProduct, isBulkOrder }) => {
               !!qtyError
             }
             onClick={async () => {
-              // if (isBulkOrder) {
-              //   const filteredSizes = sizes?.filter((s) => s?.qty > 0);
-              //   let payloadArray = [];
+              if (isBulkOrder) {
+                const filteredSizes = sizes?.filter((s) => s?.qty > 0);
+                let payloadArray = [];
 
-              //   try {
-              //     const cartPromises = filteredSizes.map(async (size) => {
-              //       let variantCombination = [];
-              //       const variantkeyCombinations = {};
+                try {
+                  const cartPromises = filteredSizes.map(async (size) => {
+                    let variantCombination = [];
+                    const variantkeyCombinations = {};
 
-              //       variantkeyCombinations["Size"] = size?.value;
-              //       variantCombination.push(size?.value);
+                    variantkeyCombinations["Size"] = size?.value;
+                    variantCombination.push(size?.value);
 
-              //       for (let j = 0; j < variants.length; j++) {
-              //         const variant = variants[j];
-              //         const value = variant?.selected;
+                    for (let j = 0; j < variants.length; j++) {
+                      const variant = variants[j];
+                      const value = variant?.selected;
 
-              //         if (variant.variant === "Size") continue;
+                      if (variant.variant === "Size") continue;
 
-              //         variantCombination.push(value);
-              //         variantkeyCombinations[variant.variant] = value;
-              //       }
+                      variantCombination.push(value);
+                      variantkeyCombinations[variant.variant] = value;
+                    }
 
-              //       let customFieldPrice = 0;
+                    let customFieldPrice = 0;
 
-              //       for (
-              //         let index = 0;
-              //         index < size?.customFields?.length;
-              //         index++
-              //       ) {
-              //         const customField = size?.customFields[index];
+                    for (
+                      let index = 0;
+                      index < size?.customFields?.length;
+                      index++
+                    ) {
+                      const customField = size?.customFields[index];
 
-              //         if (customField?.value) {
-              //           customFieldPrice += Number(customField?.fieldPrice);
-              //         }
-              //       }
+                      if (customField?.value) {
+                        customFieldPrice += Number(customField?.fieldPrice);
+                      }
+                    }
 
-              //       let price = Number(subTotal + customFieldPrice);
+                    let price = Number(subTotal + customFieldPrice);
 
-              //       const decorations = product?.decorations?.filter(
-              //         (d) => !!d?.customDecorationUrl,
-              //       );
+                    const decorations = product?.decorations?.filter(
+                      (d) => !!d?.customDecorationUrl,
+                    );
 
-              //       if (decorations?.length > 0) {
-              //         for (let index = 0; index < decorations.length; index++) {
-              //           price += Number(decorations[index]?.price);
-              //         }
-              //       }
+                    if (decorations?.length > 0) {
+                      for (let index = 0; index < decorations.length; index++) {
+                        price += Number(decorations[index]?.price);
+                      }
+                    }
 
-              //       const payload = {
-              //         ...product,
-              //         customFields: size?.customFields,
-              //         orderedCombination: {
-              //           ...variantkeyCombinations,
-              //           name: variantCombination.join(" | "),
-              //           qty: Number(size?.qty),
-              //           unitPrice: price,
-              //           subTotal: price * Number(size?.qty),
-              //         },
-              //       };
-              //       payloadArray.push(payload);
+                    const payload = {
+                      ...product,
+                      customFields: size?.customFields,
+                      orderedCombination: {
+                        ...variantkeyCombinations,
+                        name: variantCombination.join(" | "),
+                        qty: Number(size?.qty),
+                        unitPrice: price,
+                        subTotal: price * Number(size?.qty),
+                      },
+                    };
+                    payloadArray.push(payload);
 
-              //       if (!authToken) {
-              //         // setProductAddedDialog(payload);
+                    if (!authToken) {
+                      // setProductAddedDialog(payload);
 
-              //         return;
-              //       }
+                      return;
+                    }
 
-              //       return await addToCart(payload);
-              //     });
+                    return await addToCart(payload);
+                  });
 
-              //     await Promise.all(cartPromises);
+                  await Promise.all(cartPromises);
 
-              //     if (!authToken) {
-              //       dispatch(setItems({ items: [...items, ...payloadArray] }));
-              //       dispatch(
-              //         setCartItemsCount({
-              //           count: itemsCount + payloadArray?.length,
-              //         }),
-              //       );
-              //     }
-              //     setProductAddedDialog(payloadArray);
-              //   } catch (error) {
-              //     console.error("Error adding items to cart:", error);
-              //     // Handle error appropriately
-              //   }
-              // } else {
-              let variantCombination = [];
-              const variantkeyCombinations = {};
-
-              for (let index = 0; index < variants.length; index++) {
-                const variant = variants[index];
-                const value = variant?.selected;
-
-                variantCombination.push(value);
-                variantkeyCombinations[variant.variant] = value;
-              }
-
-              let customFieldPrice = 0;
-
-              for (
-                let index = 0;
-                index < product?.customFields?.length;
-                index++
-              ) {
-                const customField = product?.customFields[index];
-
-                if (customField?.value) {
-                  customFieldPrice += Number(customField?.fieldPrice);
+                  if (!authToken) {
+                    dispatch(setItems({ items: [...items, ...payloadArray] }));
+                    dispatch(
+                      setCartItemsCount({
+                        count: itemsCount + payloadArray?.length,
+                      }),
+                    );
+                  }
+                  setProductAddedDialog(payloadArray);
+                } catch (error) {
+                  console.error("Error adding items to cart:", error);
+                  // Handle error appropriately
                 }
-              }
+              } else {
+                let variantCombination = [];
+                const variantkeyCombinations = {};
 
-              let price = Number(subTotal + customFieldPrice);
+                for (let index = 0; index < variants.length; index++) {
+                  const variant = variants[index];
+                  const value = variant?.selected;
 
-              const decorations = product?.decorations?.filter(
-                (d) => !!d?.customDecorationUrl,
-              );
-
-              if (decorations?.length > 0) {
-                for (let index = 0; index < decorations.length; index++) {
-                  price += Number(decorations[index]?.price);
+                  variantCombination.push(value);
+                  variantkeyCombinations[variant.variant] = value;
                 }
-              }
 
-              const attachedProductsSelection =
-                product?.attachedProducts?.length > 0
-                  ? attachedVariantGroups
-                      ?.map((group) => {
-                        const selectedVariants =
-                          group?.variants?.map(({ variant, selected }) => ({
-                            variant,
-                            selected,
-                          })) || [];
+                let customFieldPrice = 0;
 
-                        if (!selectedVariants.length) {
-                          return null;
-                        }
+                for (
+                  let index = 0;
+                  index < product?.customFields?.length;
+                  index++
+                ) {
+                  const customField = product?.customFields[index];
 
-                        return {
-                          id: group?.id,
-                          name: group?.name,
-                          variants: selectedVariants,
-                        };
-                      })
-                      ?.filter(Boolean)
-                  : [];
+                  if (customField?.value) {
+                    customFieldPrice += Number(customField?.fieldPrice);
+                  }
+                }
 
-              const payload = {
-                ...product,
-                orderedCombination: {
-                  ...variantkeyCombinations,
-                  name: variantCombination.join(" | "),
-                  qty: Number(qty),
-                  unitPrice: price,
-                  subTotal: price * Number(qty),
-                },
-                ...(attachedProductsSelection?.length
-                  ? { attachedProductsSelection }
-                  : {}),
-              };
+                let price = Number(subTotal + customFieldPrice);
 
-              if (!authToken) {
-                dispatch(setItems({ items: [...items, payload] }));
-                dispatch(setCartItemsCount({ count: itemsCount + 1 }));
+                const decorations = product?.decorations?.filter(
+                  (d) => !!d?.customDecorationUrl,
+                );
+
+                if (decorations?.length > 0) {
+                  for (let index = 0; index < decorations.length; index++) {
+                    price += Number(decorations[index]?.price);
+                  }
+                }
+
+                const attachedProductsSelection =
+                  product?.attachedProducts?.length > 0
+                    ? attachedVariantGroups
+                        ?.map((group) => {
+                          const selectedVariants =
+                            group?.variants?.map(({ variant, selected }) => ({
+                              variant,
+                              selected,
+                            })) || [];
+
+                          if (!selectedVariants.length) {
+                            return null;
+                          }
+
+                          return {
+                            id: group?.id,
+                            name: group?.name,
+                            variants: selectedVariants,
+                          };
+                        })
+                        ?.filter(Boolean)
+                    : [];
+
+                const payload = {
+                  ...product,
+                  orderedCombination: {
+                    ...variantkeyCombinations,
+                    name: variantCombination.join(" | "),
+                    qty: Number(qty),
+                    unitPrice: price,
+                    subTotal: price * Number(qty),
+                  },
+                  ...(attachedProductsSelection?.length
+                    ? { attachedProductsSelection }
+                    : {}),
+                };
+
+                if (!authToken) {
+                  dispatch(setItems({ items: [...items, payload] }));
+                  dispatch(setCartItemsCount({ count: itemsCount + 1 }));
+                  setProductAddedDialog(payload);
+                  return;
+                }
+
+                await addToCart(payload);
                 setProductAddedDialog(payload);
-                return;
               }
-
-              await addToCart(payload);
-              setProductAddedDialog(payload);
-              // }
             }}
           >
             {/* {isOutOfStock()

@@ -10,7 +10,6 @@ import ArrivalEstimation from "@/components/ArrivalEstimation";
 import { TeamOrderFormDialog } from "./TeamOrderFormDialog";
 
 const Wrapper = ({ product, setProduct }) => {
-  const [tab, setTab] = useState(0);
   const [teamOrderFormOpen, setTeamOrderFormOpen] = useState(false);
   const { shopCurrency, b2bShop } = useSelector((s) => s?.shop);
 
@@ -22,7 +21,12 @@ const Wrapper = ({ product, setProduct }) => {
 
   const tabs = packageProduct
     ? [{ name: "Single Order" }]
-    : [{ name: "Single Order" }, { name: "Team Order" }];
+    : [{ name: "Single Order" }, { name: "Bulk Order" }];
+
+  const [tab, setTab] = useState(() => {
+    const bulkIdx = tabs.findIndex((t) => t.name === "Bulk Order");
+    return bulkIdx >= 0 ? bulkIdx : 0;
+  });
 
   let customFieldPrice = 0;
 
@@ -77,7 +81,7 @@ const Wrapper = ({ product, setProduct }) => {
                 </div>
               )}
 
-              {/* <div className="grid grid-cols-1 sm:hidden relative">
+              <div className="grid grid-cols-1 sm:hidden relative">
                 <select
                   defaultValue={tabs[tab].name}
                   onChange={(e) => {
@@ -132,15 +136,15 @@ const Wrapper = ({ product, setProduct }) => {
                     </div>
                   )}
                 </div>
-              </div> */}
+              </div>
 
               <div className="mt-6">
-                {/* {tabs[tab]?.name === "Single Order" && ( */}
-                <Info product={product} setProduct={setProduct} />
-                {/* )}
-                {tabs[tab]?.name === "Team Order" && (
+                {tabs[tab]?.name === "Single Order" && (
+                  <Info product={product} setProduct={setProduct} />
+                )}
+                {tabs[tab]?.name === "Bulk Order" && (
                   <BulkOrder product={product} setProduct={setProduct} />
-                )} */}
+                )}
               </div>
 
               <TeamOrderFormDialog
